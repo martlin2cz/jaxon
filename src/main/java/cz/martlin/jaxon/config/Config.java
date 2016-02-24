@@ -1,31 +1,38 @@
 package cz.martlin.jaxon.config;
 
-public class Config {
+import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtFromKlaxonStyle;
+import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtToKlaxonStyle;
+import cz.martlin.jaxon.j2k.data.J2KConfig;
+import cz.martlin.jaxon.jack.data.misc.JackConfig;
+import cz.martlin.jaxon.k2xml.KlaxonToXMLConfig;
+import cz.martlin.jaxon.klaxon.config.KlaxonConfig;
 
-	
-	public static String getVersion() {
-		// TODO Auto-generated method stub
-		return "0.1";
-	}
-	public static String getRootElementNodeName() {
-		// TODO Auto-generated method stub
-		return "jaxon-object";
-	}
+public class Config implements JackConfig, KlaxonConfig, J2KConfig,
+		KlaxonToXMLConfig {
 
-
-
-	public static String getVersionAttrName() {
-		// TODO Auto-generated method stub
-		return "jaxon-version";
+	@Override
+	public boolean isIgnoringFinalFields() {
+		return true;
 	}
 
-	public static String getObjectTypeAttrName() {
-		// TODO Auto-generated method stub
-		return "object-type";
+	@Override
+	public AtmValFrmtToKlaxonStyle getAVFStyleToKlaxon() {
+		return AtmValFrmtToKlaxonStyle.CHILD_WITH_TEXT_VALUE;
 	}
-	public static String getCreatedAtAttrName() {
-		// TODO Auto-generated method stub
-		return "created-at";
+
+	@Override
+	public AtmValFrmtFromKlaxonStyle getAVFStyleFromKlaxon() {
+		return AtmValFrmtFromKlaxonStyle.SAME_AS_TO_KLAXON;
+	}
+
+	@Override
+	public boolean isIndent() {
+		return true;
+	}
+
+	@Override
+	public int getIndentSize() {
+		return 2;
 	}
 
 }
