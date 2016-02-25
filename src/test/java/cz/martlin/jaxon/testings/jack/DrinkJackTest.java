@@ -100,7 +100,7 @@ public class DrinkJackTest implements JackTestTuple<Drink> {
 
 		JackTestsUtils.putFT(values, "cost", double.class, cost);
 
-		return new JackObject(getType(), values);
+		return new JackObject(getType(), values, "Simple drink testing instance");
 	}
 
 	@Override

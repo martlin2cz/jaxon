@@ -51,7 +51,7 @@ public class PersonJackTestTuple implements JackTestTuple<Person> {
 		JackTestsUtils.putFT(values, "age", int.class, testingAge);
 		JackTestsUtils.putFT(values, "employed", boolean.class, testingEmp);
 
-		return new JackObject(getType(), values);
+		return new JackObject(getType(), values, null);
 	}
 
 	@Override

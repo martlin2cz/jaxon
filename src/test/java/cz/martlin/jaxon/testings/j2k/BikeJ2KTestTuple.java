@@ -78,7 +78,7 @@ public class BikeJ2KTestTuple implements JackToKlaxonTestTuple {
 		values.put(pbdField, previouslyBorrowedDaysToJack());
 
 		JackValueType type = new JackValueType(BikeToBorrow.class);
-		return new JackObject(type, values);
+		return new JackObject(type, values, "Bike to rent or what");
 	}
 
 	private JackValue currentlyBorrowedToJack() {

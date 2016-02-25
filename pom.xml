@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cz.martlin</groupId>
 	<artifactId>jaxon</artifactId>
-	<version>0.2</version>
+	<version>0.3</version>
 	<name>Jaxon, Jack and Klaxon xml library</name>
 	<description>What do you get when you combine Jack and Klaxon? A jaxon, simple, but powerfull XML library for java</description>
 

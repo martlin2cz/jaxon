@@ -6,6 +6,12 @@ import org.w3c.dom.Document;
 
 import cz.martlin.jaxon.config.Config;
 import cz.martlin.jaxon.j2k.JackToKlaxonConverter;
+import cz.martlin.jaxon.j2k.data.J2KConfig;
+import cz.martlin.jaxon.j2k.data.SupportedTransformers;
+import cz.martlin.jaxon.j2k.transformer.J2KBaseTransformer;
+import cz.martlin.jaxon.j2k.transformer.JackObjectsTransformer;
+import cz.martlin.jaxon.j2k.transformers.FryJ2KTransformerImpl;
+import cz.martlin.jaxon.j2k.transformers.J2KTransformWithRootObjSimpleImpl;
 import cz.martlin.jaxon.jack.JackConverter;
 import cz.martlin.jaxon.jack.data.values.JackObject;
 import cz.martlin.jaxon.k2xml.KlaxonToXMLConverter;
@@ -19,12 +25,22 @@ public class JaxonConverter {
 	private final KlaxonConverter klaxon;
 	private final KlaxonToXMLConverter k2x;
 
-	public JaxonConverter(Config config) {
+	public JaxonConverter(Config config, J2KBaseTransformer transformer) {
 		jack = new JackConverter(config);
-		j2k = new JackToKlaxonConverter(config);
+		j2k = new JackToKlaxonConverter(config, transformer);
 		klaxon = new KlaxonConverter(config);
 		k2x = new KlaxonToXMLConverter(config);
 	}
+
+	public JaxonConverter(Config config) {
+		this(config, defaultTransformer(config));
+	}
+
+	public JaxonConverter(Config config, String baseTransformerName, String objectsTransformerName) {
+		this(config, findTransformer(config, objectsTransformerName, baseTransformerName));
+	}
+
+	
 
 	private Document objectToDocument(Object object) throws JaxonException {
 		JackObject jackObject = jack.toJack(object);
@@ -88,4 +104,16 @@ public class JaxonConverter {
 		return documentToObject(document);
 	}
 
+	
+	private static J2KBaseTransformer defaultTransformer(Config config) {
+		JackObjectsTransformer objects = new FryJ2KTransformerImpl(config);
+		J2KBaseTransformer base = new J2KTransformWithRootObjSimpleImpl(objects);
+		return base;
+	}
+
+	private static J2KBaseTransformer findTransformer(J2KConfig config, String objectsTransformerName,
+			String baseTransformerName) {
+		SupportedTransformers transformers = new SupportedTransformers();
+		return transformers.find(config, baseTransformerName, objectsTransformerName);
+	}
 }

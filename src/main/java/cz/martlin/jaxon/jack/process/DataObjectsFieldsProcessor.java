@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import cz.martlin.jaxon.j2k.abstracts.JackToKlaxonSerializable;
 import cz.martlin.jaxon.jack.JackImplementation;
 import cz.martlin.jaxon.jack.ReflectionAndJack;
+import cz.martlin.jaxon.jack.abstracts.JackSerializable;
 import cz.martlin.jaxon.jack.abstracts.ValueTypeProcessor;
 import cz.martlin.jaxon.jack.data.design.JackObjectDesign;
 import cz.martlin.jaxon.jack.data.design.JackObjectField;
@@ -26,8 +28,7 @@ public class DataObjectsFieldsProcessor extends ValueTypeProcessor {
 	private final JackImplementation impl;
 	private final ReflectionAndJack raj;
 
-	public DataObjectsFieldsProcessor(JackImplementation impl,
-			ReflectionAndJack raj) {
+	public DataObjectsFieldsProcessor(JackImplementation impl, ReflectionAndJack raj) {
 
 		this.impl = impl;
 		this.raj = raj;
@@ -58,15 +59,13 @@ public class DataObjectsFieldsProcessor extends ValueTypeProcessor {
 		return object;
 	}
 
-	public JackObjectDesign getDesignOf(JackValueType type)
-			throws JackException {
+	public JackObjectDesign getDesignOf(JackValueType type) throws JackException {
 
 		List<JackObjectField> fields = raj.getFields(type);
 		return new JackObjectDesign(type, fields);
 	}
 
-	private JackObject evaluate(JackObjectDesign design, Object object)
-			throws JackException {
+	private JackObject evaluate(JackObjectDesign design, Object object) throws JackException {
 
 		Map<JackObjectField, JackValue> values = new LinkedHashMap<>();
 
@@ -78,7 +77,19 @@ public class DataObjectsFieldsProcessor extends ValueTypeProcessor {
 		}
 
 		JackValueType type = design.getType();
-		return new JackObject(type, values);
+		String description = tryToGetDescription(object);
+		return new JackObject(type, values, description);
+	}
+
+	private String tryToGetDescription(Object object) {
+		// huuh, not the best, but the simpliest way:
+
+		if (object instanceof JackSerializable) {
+			JackToKlaxonSerializable serializable = (JackToKlaxonSerializable) object;
+			return serializable.jaxonDescription();
+		}
+		
+		return null;
 	}
 
 	private Object build(JackObject jack) throws JackException {
@@ -86,8 +97,7 @@ public class DataObjectsFieldsProcessor extends ValueTypeProcessor {
 		JackValueType type = jack.getType();
 		Object object = raj.createNew(type);
 
-		for (Entry<JackObjectField, JackValue> entry : jack.getValues()
-				.entrySet()) {
+		for (Entry<JackObjectField, JackValue> entry : jack.getValues().entrySet()) {
 			JackObjectField field = entry.getKey();
 			JackValue val = entry.getValue();
 

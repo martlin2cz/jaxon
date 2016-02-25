@@ -16,11 +16,12 @@ import cz.martlin.jaxon.utils.Utils;
  */
 public class JackObject extends JackCompositeValue {
 	private final Map<JackObjectField, JackValue> values;
-	private final String jackDescription = null;	//TODO read via JackSerializable#jackDescription
+	private final String description;
 
-	public JackObject(JackValueType type, Map<JackObjectField, JackValue> values) {
+	public JackObject(JackValueType type, Map<JackObjectField, JackValue> values, String description) {
 		super(type);
 		this.values = values;
+		this.description = description;
 	}
 
 	public Map<JackObjectField, JackValue> getValues() {
@@ -46,12 +47,15 @@ public class JackObject extends JackCompositeValue {
 		return null;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
 	@Override
 	public String toString() {
 		final int maxLen = 10;
-		return "JackObject [values="
-				+ (values != null ? Utils.toString(values.entrySet(), maxLen)
-						: null) + ", getType()=" + getType() + "]";
+		return "JackObject [values=" + (values != null ? Utils.toString(values.entrySet(), maxLen) : null)
+				+ ", getType()=" + getType() + "]";
 	}
 
 	@Override

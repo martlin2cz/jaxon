@@ -15,7 +15,7 @@ public class JackToKlaxonConverterTest {
 
 	private final Config config = new Config();
 	private final JackToKlaxonConverter converter = new JackToKlaxonConverter(
-			config);
+			config, null);	//TODO
 
 	@Test
 	public void testKlaxonToJack() {

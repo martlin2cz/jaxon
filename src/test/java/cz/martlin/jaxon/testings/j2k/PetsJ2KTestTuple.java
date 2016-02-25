@@ -48,7 +48,7 @@ public class PetsJ2KTestTuple implements JackToKlaxonTestTuple {
 		JackTestsUtils.putFT(values, "legs", Integer.class, legs);
 		JackTestsUtils.putFT(values, "canSwim", boolean.class, canSwim);
 
-		return new JackObject(type, values);
+		return new JackObject(type, values, "Yeah, pet!");
 	}
 
 	@Override

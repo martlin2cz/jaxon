@@ -11,11 +11,11 @@ import cz.martlin.jaxon.klaxon.data.KlaxonAbstractElement;
  * @author martin
  * 
  */
-public interface J2KBaseTranformer {
-	public KlaxonAbstractElement jackToKlaxonRoot(JackObject jack)
-			throws JackToKlaxonException;
+public interface J2KBaseTransformer {
+	public String getName();
 
-	public JackObject klaxonRootToJack(KlaxonAbstractElement klaxonRoot)
-			throws JackToKlaxonException;
+	public KlaxonAbstractElement jackToKlaxonRoot(JackObject jack) throws JackToKlaxonException;
+
+	public JackObject klaxonRootToJack(KlaxonAbstractElement klaxonRoot) throws JackToKlaxonException;
 
 }

@@ -11,7 +11,7 @@ import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtFromKlaxonStyle;
 import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtToKlaxonStyle;
 import cz.martlin.jaxon.j2k.data.J2KConfig;
 import cz.martlin.jaxon.j2k.data.JackToKlaxonException;
-import cz.martlin.jaxon.j2k.data.SupportedTransformers;
+import cz.martlin.jaxon.j2k.data.SupportedAtomicsTranslators;
 import cz.martlin.jaxon.j2k.transformer.JackObjectsTransformer;
 import cz.martlin.jaxon.j2k.translator.AtomicValueTranslator;
 import cz.martlin.jaxon.jack.JackImplementation;
@@ -41,16 +41,15 @@ import cz.martlin.jaxon.klaxon.data.KlaxonEntry;
  * @author martin
  * 
  */
-public abstract class AbstractFuturamaJ2KTransformer implements
-		JackObjectsTransformer {
+public abstract class AbstractFuturamaJ2KTransformer implements JackObjectsTransformer {
 
-	protected final SupportedTransformers transformers;
+	protected final SupportedAtomicsTranslators transformers;
 
 	protected ReflectionAndJack raj;
 	protected JackImplementation jackImpl;
 
 	public AbstractFuturamaJ2KTransformer(J2KConfig config) {
-		this.transformers = new SupportedTransformers(
+		this.transformers = new SupportedAtomicsTranslators(config,// 
 				AtmValFrmtToKlaxonStyle.CHILD_WITH_TEXT_VALUE,
 				AtmValFrmtFromKlaxonStyle.SAME_AS_TO_KLAXON);
 
@@ -66,8 +65,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected abstract KlaxonEntry jackMapEntryToKlaxon(JackValue key,
-			JackValue value) throws JackToKlaxonException;
+	protected abstract KlaxonEntry jackMapEntryToKlaxon(JackValue key, JackValue value) throws JackToKlaxonException;
 
 	/**
 	 * Creates name (element) of one item of jack collection.
@@ -85,8 +83,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @param expectedType
 	 * @param entries
 	 */
-	protected abstract void addJackMetadata(JackValue jack,
-			JackValueType expectedType, EntriesCollection entries);
+	protected abstract void addJackMetadata(JackValue jack, JackValueType expectedType, EntriesCollection entries);
 
 	/**
 	 * Creates name for "root" element (jack object which is not stored in any
@@ -104,8 +101,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected abstract JackValue inferCollectionItem(KlaxonAbstractElement child)
-			throws JackToKlaxonException;
+	protected abstract JackValue inferCollectionItem(KlaxonAbstractElement child) throws JackToKlaxonException;
 
 	/**
 	 * Parses entry of map entry element.
@@ -114,8 +110,8 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected abstract Entry<JackValue, JackValue> inferEntryOfMap(
-			KlaxonAbstractElement child) throws JackToKlaxonException;
+	protected abstract Entry<JackValue, JackValue> inferEntryOfMap(KlaxonAbstractElement child)
+			throws JackToKlaxonException;
 
 	/**
 	 * Tries however to get type of given entry.
@@ -124,12 +120,10 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected abstract JackValueType tryToInferTypeOf(KlaxonEntry klaxon)
-			throws JackToKlaxonException;
+	protected abstract JackValueType tryToInferTypeOf(KlaxonEntry klaxon) throws JackToKlaxonException;
 
 	@Override
-	public JackObject toJack(KlaxonAbstractElement klaxon)
-			throws JackToKlaxonException {
+	public JackObject toJack(KlaxonAbstractElement klaxon) throws JackToKlaxonException {
 
 		return (JackObject) klaxonEntryToJackValue(null, klaxon);
 	}
@@ -144,8 +138,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	public JackValue klaxonEntryToJackValue(JackValueType typeOrNull,
-			KlaxonEntry klaxon) throws JackToKlaxonException {
+	public JackValue klaxonEntryToJackValue(JackValueType typeOrNull, KlaxonEntry klaxon) throws JackToKlaxonException {
 		JackValueType type;
 
 		try {
@@ -175,21 +168,19 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected JackValue typedKlaxonEntryToJackValue(JackValueType type,
-			KlaxonEntry klaxon) throws JackToKlaxonException {
+	protected JackValue typedKlaxonEntryToJackValue(JackValueType type, KlaxonEntry klaxon)
+			throws JackToKlaxonException {
 
 		if (klaxon == null) {
 			return JackNullValue.INSTANCE;
 		}
 
 		if (type.isJackObject() && klaxon instanceof KlaxonElemWithChildren) {
-			return klaxonElementToJackObject(type,
-					(KlaxonElemWithChildren) klaxon);
+			return klaxonElementToJackObject(type, (KlaxonElemWithChildren) klaxon);
 		}
 
 		if (type.isCollection() && klaxon instanceof KlaxonElemWithChildren) {
-			return klaxonElementToJackCollection(type,
-					(KlaxonElemWithChildren) klaxon);
+			return klaxonElementToJackCollection(type, (KlaxonElemWithChildren) klaxon);
 		}
 
 		if (type.isMap() && klaxon instanceof KlaxonElemWithChildren) {
@@ -197,8 +188,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 		}
 
 		if (type.isArray() && klaxon instanceof KlaxonElemWithChildren) {
-			return klaxonElementToJackArray(type,
-					(KlaxonElemWithChildren) klaxon);
+			return klaxonElementToJackArray(type, (KlaxonElemWithChildren) klaxon);
 		}
 
 		if (type.isAtomicValue()) {
@@ -217,13 +207,12 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected JackObject klaxonElementToJackObject(JackValueType ofType,
-			KlaxonAbstractElement klaxon) throws JackToKlaxonException {
+	protected JackObject klaxonElementToJackObject(JackValueType ofType, KlaxonAbstractElement klaxon)
+			throws JackToKlaxonException {
 
-		Map<JackObjectField, JackValue> values = inferValuesOfObject(ofType,
-				klaxon);
+		Map<JackObjectField, JackValue> values = inferValuesOfObject(ofType, klaxon);
 
-		return new JackObject(ofType, values);
+		return new JackObject(ofType, values, null);
 	}
 
 	/**
@@ -235,8 +224,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected Map<JackObjectField, JackValue> inferValuesOfObject(
-			JackValueType ofType, KlaxonAbstractElement klaxon)
+	protected Map<JackObjectField, JackValue> inferValuesOfObject(JackValueType ofType, KlaxonAbstractElement klaxon)
 			throws JackToKlaxonException {
 
 		Map<JackObjectField, JackValue> values = new LinkedHashMap<>();
@@ -253,8 +241,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 				values.put(field, value);
 			}
 		} catch (JackException e) {
-			throw new JackToKlaxonException("Cannot infer values from klaxon",
-					e);
+			throw new JackToKlaxonException("Cannot infer values from klaxon", e);
 		}
 
 		return values;
@@ -269,8 +256,8 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected JackValue klaxonElementToJackAtomic(JackValueType ofType,
-			KlaxonEntry klaxon) throws JackToKlaxonException {
+	protected JackValue klaxonElementToJackAtomic(JackValueType ofType, KlaxonEntry klaxon)
+			throws JackToKlaxonException {
 
 		AtomicValueTranslator<?> transformer = transformers.find(ofType);
 		return transformer.toJack(ofType, klaxon);
@@ -284,8 +271,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @param klaxon
 	 * @return
 	 */
-	protected JackValue klaxonElementToJackArray(JackValueType ofType,
-			KlaxonElemWithChildren klaxon) {
+	protected JackValue klaxonElementToJackArray(JackValueType ofType, KlaxonElemWithChildren klaxon) {
 
 		throw new UnsupportedOperationException("arrays");
 	}
@@ -298,8 +284,8 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected JackValue klaxonElementToJackCollection(JackValueType ofType,
-			KlaxonElemWithChildren klaxon) throws JackToKlaxonException {
+	protected JackValue klaxonElementToJackCollection(JackValueType ofType, KlaxonElemWithChildren klaxon)
+			throws JackToKlaxonException {
 
 		Collection<JackValue> data = inferCollectionData(klaxon);
 		return new JackCollection(ofType, data);
@@ -312,8 +298,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected Collection<JackValue> inferCollectionData(
-			KlaxonElemWithChildren klaxon) throws JackToKlaxonException {
+	protected Collection<JackValue> inferCollectionData(KlaxonElemWithChildren klaxon) throws JackToKlaxonException {
 
 		List<JackValue> values = new ArrayList<>();
 
@@ -333,8 +318,8 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected JackValue klaxonElementToJackMap(JackValueType ofType,
-			KlaxonElemWithChildren klaxon) throws JackToKlaxonException {
+	protected JackValue klaxonElementToJackMap(JackValueType ofType, KlaxonElemWithChildren klaxon)
+			throws JackToKlaxonException {
 
 		Map<JackValue, JackValue> data = inferEntriesOfMap(klaxon);
 		return new JackMap(ofType, data);
@@ -347,8 +332,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected Map<JackValue, JackValue> inferEntriesOfMap(
-			KlaxonElemWithChildren klaxon) throws JackToKlaxonException {
+	protected Map<JackValue, JackValue> inferEntriesOfMap(KlaxonElemWithChildren klaxon) throws JackToKlaxonException {
 
 		Map<JackValue, JackValue> map = new LinkedHashMap<>();
 
@@ -361,8 +345,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	}
 
 	@Override
-	public KlaxonAbstractElement toKlaxon(JackObject jack)
-			throws JackToKlaxonException {
+	public KlaxonAbstractElement toKlaxon(JackObject jack) throws JackToKlaxonException {
 
 		String name = createRootName(jack);
 
@@ -381,8 +364,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected KlaxonEntry jackValueToKlaxonElem(String name,
-			JackValueType expectedType, JackValue jack)
+	protected KlaxonEntry jackValueToKlaxonElem(String name, JackValueType expectedType, JackValue jack)
 			throws JackToKlaxonException {
 
 		if (jack instanceof JackNullValue) {
@@ -400,8 +382,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 		} else if (jack instanceof JackMap) {
 			return jackMapToKlaxon(name, expectedType, (JackMap) jack);
 		} else {
-			Exception e = new IllegalArgumentException(
-					"Unknown jack object type: " + jack);
+			Exception e = new IllegalArgumentException("Unknown jack object type: " + jack);
 			throw new JackToKlaxonException("Unknown type", e);
 		}
 	}
@@ -414,8 +395,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @param jack
 	 * @return
 	 */
-	protected KlaxonAbstractElement jackNullToKlaxon(String name,
-			JackValueType expectedType, JackNullValue jack) {
+	protected KlaxonAbstractElement jackNullToKlaxon(String name, JackValueType expectedType, JackNullValue jack) {
 		return null;
 	}
 
@@ -428,8 +408,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected KlaxonEntry jackAtomicToKlaxon(String name,
-			JackValueType expectedType, JackAtomicValue jack)
+	protected KlaxonEntry jackAtomicToKlaxon(String name, JackValueType expectedType, JackAtomicValue jack)
 			throws JackToKlaxonException {
 
 		JackValueType type = jack.getType();
@@ -448,8 +427,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @param klaxon
 	 * @return
 	 */
-	protected KlaxonEntry processAtomic(JackAtomicValue jack,
-			JackValueType expectedType, KlaxonEntry klaxon) {
+	protected KlaxonEntry processAtomic(JackAtomicValue jack, JackValueType expectedType, KlaxonEntry klaxon) {
 		if (!(klaxon instanceof KlaxonAbstractElement)) {
 			return klaxon; // Nothing to do, sorry...
 		}
@@ -466,8 +444,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 		if (elem instanceof KlaxonElemWithChildren) {
 			return new KlaxonElemWithChildren(name, entries);
 		} else if (elem instanceof KlaxonElemWithValue) {
-			return new KlaxonElemWithValue(name, entries.getAttributes(),
-					entries.getValue());
+			return new KlaxonElemWithValue(name, entries.getAttributes(), entries.getValue());
 		} else {
 			throw new IllegalArgumentException("Unknown child");
 		}
@@ -482,8 +459,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected KlaxonAbstractElement jackObjectToKlaxon(String name,
-			JackValueType expectedType, JackObject jack)
+	protected KlaxonAbstractElement jackObjectToKlaxon(String name, JackValueType expectedType, JackObject jack)
 			throws JackToKlaxonException {
 
 		EntriesCollection entries = new EntriesCollection();
@@ -501,8 +477,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @param entries
 	 * @throws JackToKlaxonException
 	 */
-	protected void addJackObjectFields(JackObject jack,
-			EntriesCollection entries) throws JackToKlaxonException {
+	protected void addJackObjectFields(JackObject jack, EntriesCollection entries) throws JackToKlaxonException {
 
 		Map<JackObjectField, JackValue> values = jack.getValues();
 
@@ -528,8 +503,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected KlaxonAbstractElement jackCollectionToKlaxon(String name,
-			JackValueType expectedType, JackCollection jack)
+	protected KlaxonAbstractElement jackCollectionToKlaxon(String name, JackValueType expectedType, JackCollection jack)
 			throws JackToKlaxonException {
 		EntriesCollection entries = new EntriesCollection();
 
@@ -546,8 +520,8 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @param entries
 	 * @throws JackToKlaxonException
 	 */
-	protected void addJackCollectionFields(JackCollection jack,
-			EntriesCollection entries) throws JackToKlaxonException {
+	protected void addJackCollectionFields(JackCollection jack, EntriesCollection entries)
+			throws JackToKlaxonException {
 
 		for (JackValue item : jack.getData()) {
 			String name = createNameOfCollectionItem(item);
@@ -565,8 +539,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	protected KlaxonAbstractElement jackMapToKlaxon(String name,
-			JackValueType expectedType, JackMap jack)
+	protected KlaxonAbstractElement jackMapToKlaxon(String name, JackValueType expectedType, JackMap jack)
 			throws JackToKlaxonException {
 		EntriesCollection entries = new EntriesCollection();
 
@@ -583,8 +556,7 @@ public abstract class AbstractFuturamaJ2KTransformer implements
 	 * @param entries
 	 * @throws JackToKlaxonException
 	 */
-	protected void addJackMapFields(JackMap jack, EntriesCollection entries)
-			throws JackToKlaxonException {
+	protected void addJackMapFields(JackMap jack, EntriesCollection entries) throws JackToKlaxonException {
 		Map<JackValue, JackValue> items = jack.getData();
 
 		for (Entry<JackValue, JackValue> entry : items.entrySet()) {

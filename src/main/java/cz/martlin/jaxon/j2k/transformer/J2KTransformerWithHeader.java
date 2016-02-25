@@ -9,7 +9,7 @@ import cz.martlin.jaxon.klaxon.data.KlaxonAbstractElement;
 import cz.martlin.jaxon.klaxon.data.KlaxonElemWithChildren;
 
 /**
- * Implements {@link J2KBaseTranformer} such that each root contains some header
+ * Implements {@link J2KBaseTransformer} such that each root contains some header
  * and body element. Header should contain some metadata about object (type,
  * name, specification of used format and version ...) and the body element the
  * real data. This abstract class predefines various methods to implement it.
@@ -17,7 +17,7 @@ import cz.martlin.jaxon.klaxon.data.KlaxonElemWithChildren;
  * @author martin
  * 
  */
-public abstract class J2KTransformerWithHeader implements J2KBaseTranformer {
+public abstract class J2KTransformerWithHeader implements J2KBaseTransformer {
 
 	protected final JackObjectsTransformer transformer;
 

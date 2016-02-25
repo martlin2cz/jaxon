@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<jaxon>
-  <header>
-    <transformer>Fry</transformer>
-    <type>cz.martlin.jaxon.testings.jaxon.Person</type>
-  </header>
-  <person type="cz.martlin.jaxon.testings.jaxon.Person">
-    <name>John</name>
-    <age>45</age>
-    <employed>true</employed>
-  </person>
-</jaxon>
+<person description="person" format="Fry" type="cz.martlin.jaxon.testings.jaxon.Person">
+  <name>John</name>
+  <age>45</age>
+  <employed>true</employed>
+</person>

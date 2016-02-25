@@ -51,7 +51,7 @@ public class PersonJ2KTestTuple implements JackToKlaxonTestTuple {
 		values.put(empField, new JackAtomicValue(testingEmp));
 
 		JackValueType type = new JackValueType(Person.class);
-		return new JackObject(type, values);
+		return new JackObject(type, values, "Some Person");
 	}
 
 	@Override
