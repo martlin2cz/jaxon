@@ -8,8 +8,7 @@ import cz.martlin.jaxon.jack.data.design.JackValueType;
 
 public class EnumsTranslator<T extends Enum<T>> extends SingleValuedTranslator<T> {
 
-	public EnumsTranslator(AtmValFrmtToKlaxonStyle toKlaxonStyle,
-			AtmValFrmtFromKlaxonStyle fromKlaxonStyle) {
+	public EnumsTranslator(AtmValFrmtToKlaxonStyle toKlaxonStyle, AtmValFrmtFromKlaxonStyle fromKlaxonStyle) {
 
 		super(new EnumSerializer<T>(), //
 				toKlaxonStyle, fromKlaxonStyle);
@@ -20,18 +19,21 @@ public class EnumsTranslator<T extends Enum<T>> extends SingleValuedTranslator<T
 		return type.getType().isEnum();
 	}
 
-	public static class EnumSerializer<T extends Enum<T>> implements
-			AbstractToStringSerializer<T> {
+	public static class EnumSerializer<T extends Enum<T>> implements AbstractToStringSerializer<T> {
 
 		public EnumSerializer() {
 		}
 
 		@Override
 		public Class<T> supportedType() {
+			// fix for javac bug, see i.e.:
+			// http://stackoverflow.com/questions/1609531/same-source-code-eclipse-build-success-but-maven-javac-fails
+			
+			Class<?> clazz = (Class<?>) Enum.class;
 			@SuppressWarnings("unchecked")
-			Class<T> clazz = (Class<T>) Enum.class;
+			Class<T> clazzT = (Class<T>) clazz;
 
-			return clazz;
+			return clazzT;
 		}
 
 		@Override

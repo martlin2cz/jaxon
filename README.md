@@ -34,9 +34,6 @@ It's me, Person [name=m@rtlin, age=42, employed=false]:
   <age>42</age>
   <employed>false</employed>
 </person>
-
-John before: Person [name=John, age=45, employed=true]
-John after:  Person [name=John, age=45, employed=true]
 ```
 
 When are used different transformers, the XML of person could look like this:
@@ -60,8 +57,8 @@ When are used different transformers, the XML of person could look like this:
 
 ## TODO
 The work is at the begining, there is still lot of to do. For instance:
- - [ ] fix maven build
- - [ ] upgrade to Java 8
+ - [x] fix maven build
+ - [x] upgrade to Java 8
  - [ ] add logging (debug), clearify exceptions handling
  - [ ] add validation (XLS) and in-code (?)
  - [ ] config. What else? Use jaxon to read jaxon config from jaxon file? Hm..

@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import cz.martlin.jaxon.j2k.abstracts.JackToKlaxonSerializable;
 import cz.martlin.jaxon.jack.JackImplementation;
 import cz.martlin.jaxon.jack.ReflectionAndJack;
-import cz.martlin.jaxon.jack.abstracts.JackSerializable;
 import cz.martlin.jaxon.jack.abstracts.ValueTypeProcessor;
 import cz.martlin.jaxon.jack.data.design.JackObjectDesign;
 import cz.martlin.jaxon.jack.data.design.JackObjectField;
@@ -84,7 +83,7 @@ public class DataObjectsFieldsProcessor extends ValueTypeProcessor {
 	private String tryToGetDescription(Object object) {
 		// huuh, not the best, but the simpliest way:
 
-		if (object instanceof JackSerializable) {
+		if (object instanceof JackToKlaxonSerializable) {
 			JackToKlaxonSerializable serializable = (JackToKlaxonSerializable) object;
 			return serializable.jaxonDescription();
 		}

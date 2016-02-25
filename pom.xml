@@ -5,7 +5,16 @@
 	<artifactId>jaxon</artifactId>
 	<version>0.3</version>
 	<name>Jaxon, Jack and Klaxon xml library</name>
-	<description>What do you get when you combine Jack and Klaxon? A jaxon, simple, but powerfull XML library for java</description>
+	<description>What do you get when you combine Jack and Klaxon? A jaxon, simple, but powerful XML library for java</description>
+
+	<developers>
+		<developer>
+			<email>martlin2cz@gmail.com</email>
+			<name>m@rtlin</name>
+			<organization>m@rtlin</organization>
+			<organizationUrl>http://martlins-web.tode.cz/</organizationUrl>
+		</developer>
+	</developers>
 
 	<dependencies>
 		<!-- JUNIT -->
@@ -25,8 +34,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.0</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 
