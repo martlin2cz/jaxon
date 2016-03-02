@@ -4,8 +4,14 @@ import cz.martlin.jaxon.j2k.data.J2KConfig;
 import cz.martlin.jaxon.j2k.data.JackToKlaxonException;
 import cz.martlin.jaxon.j2k.transformer.J2KBaseTransformer;
 import cz.martlin.jaxon.jack.data.values.JackObject;
-import cz.martlin.jaxon.klaxon.data.KlaxonAbstractElement;
+import cz.martlin.jaxon.klaxon.data.KlaxonObject;
 
+/**
+ * Converts jack objects to klaxon object.s
+ * 
+ * @author martin
+ *
+ */
 public class JackToKlaxonConverter {
 
 	private final J2KBaseTransformer transformer;
@@ -14,7 +20,14 @@ public class JackToKlaxonConverter {
 		this.transformer = transformer;
 	}
 
-	public JackObject klaxonToJack(KlaxonAbstractElement klaxon) throws JackToKlaxonException {
+	/**
+	 * Converts given klaxon to jack.
+	 * 
+	 * @param klaxon
+	 * @return
+	 * @throws JackToKlaxonException
+	 */
+	public JackObject klaxonToJack(KlaxonObject klaxon) throws JackToKlaxonException {
 
 		try {
 			return transformer.klaxonRootToJack(klaxon);
@@ -23,7 +36,14 @@ public class JackToKlaxonConverter {
 		}
 	}
 
-	public KlaxonAbstractElement jackToKlaxon(JackObject jack) throws JackToKlaxonException {
+	/**
+	 * Converts given jack to klaxon.
+	 * 
+	 * @param jack
+	 * @return
+	 * @throws JackToKlaxonException
+	 */
+	public KlaxonObject jackToKlaxon(JackObject jack) throws JackToKlaxonException {
 
 		try {
 			return transformer.jackToKlaxonRoot(jack);

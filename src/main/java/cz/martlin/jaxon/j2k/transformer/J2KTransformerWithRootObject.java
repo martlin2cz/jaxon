@@ -2,7 +2,7 @@ package cz.martlin.jaxon.j2k.transformer;
 
 import cz.martlin.jaxon.j2k.data.JackToKlaxonException;
 import cz.martlin.jaxon.jack.data.values.JackObject;
-import cz.martlin.jaxon.klaxon.data.KlaxonAbstractElement;
+import cz.martlin.jaxon.klaxon.data.KlaxonObject;
 
 /**
  * Represents simple J2K transformer such that the object's metadata is stored
@@ -21,22 +21,44 @@ public abstract class J2KTransformerWithRootObject implements J2KBaseTransformer
 	}
 
 	@Override
-	public KlaxonAbstractElement jackToKlaxonRoot(JackObject jack) throws JackToKlaxonException {
-		KlaxonAbstractElement klaxon = transformer.toKlaxon(jack);
+	public KlaxonObject jackToKlaxonRoot(JackObject jack) throws JackToKlaxonException {
+		KlaxonObject klaxon = transformer.toKlaxon(jack);
 
 		return addMetadata(klaxon, jack);
 	}
 
-	protected abstract KlaxonAbstractElement addMetadata(KlaxonAbstractElement klaxon, JackObject jack) throws JackToKlaxonException;
+	/**
+	 * Adds somehow metadata (probably as header fields) of given jack to given
+	 * klaxon (can create new).
+	 * 
+	 * @param klaxon
+	 * @param jack
+	 * @return
+	 * @throws JackToKlaxonException
+	 */
+	protected abstract KlaxonObject addMetadata(KlaxonObject klaxon, JackObject jack) throws JackToKlaxonException;
 
 	@Override
-	public JackObject klaxonRootToJack(KlaxonAbstractElement klaxonRoot) throws JackToKlaxonException {
+	public JackObject klaxonRootToJack(KlaxonObject klaxonRoot) throws JackToKlaxonException {
 		check(klaxonRoot);
 		return parse(klaxonRoot);
 	}
 
-	protected abstract void check(KlaxonAbstractElement klaxonRoot) throws JackToKlaxonException;
+	/**
+	 * Somehow check given root.
+	 * 
+	 * @param klaxonRoot
+	 * @throws JackToKlaxonException
+	 */
+	protected abstract void check(KlaxonObject klaxonRoot) throws JackToKlaxonException;
 
-	protected abstract JackObject parse(KlaxonAbstractElement klaxonRoot) throws JackToKlaxonException;
+	/**
+	 * Parses given root element.
+	 * 
+	 * @param klaxonRoot
+	 * @return
+	 * @throws JackToKlaxonException
+	 */
+	protected abstract JackObject parse(KlaxonObject klaxonRoot) throws JackToKlaxonException;
 
 }

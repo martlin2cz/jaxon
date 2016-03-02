@@ -1,21 +1,30 @@
 package cz.martlin.jaxon.j2k.transformers;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 
+import cz.martlin.jaxon.Primitives;
 import cz.martlin.jaxon.j2k.data.J2KConfig;
 import cz.martlin.jaxon.j2k.data.JackToKlaxonException;
+import cz.martlin.jaxon.jack.ReflectionAndJack;
 import cz.martlin.jaxon.jack.data.design.JackValueType;
 import cz.martlin.jaxon.jack.data.misc.JackException;
 import cz.martlin.jaxon.jack.data.values.JackObject;
 import cz.martlin.jaxon.jack.data.values.JackValue;
-import cz.martlin.jaxon.klaxon.data.EntriesCollection;
-import cz.martlin.jaxon.klaxon.data.KlaxonAbstractElement;
-import cz.martlin.jaxon.klaxon.data.KlaxonAttribute;
-import cz.martlin.jaxon.klaxon.data.KlaxonElemWithChildren;
-import cz.martlin.jaxon.klaxon.data.KlaxonEntry;
+import cz.martlin.jaxon.klaxon.data.KlaxonObject;
+import cz.martlin.jaxon.klaxon.data.KlaxonStringValue;
+import cz.martlin.jaxon.klaxon.data.KlaxonValue;
 import cz.martlin.jaxon.utils.Utils;
 
+/**
+ * The basic {@link AbstractFuturamaJ2KTransformer} implementation. Stores type
+ * specifier only and only where it is really required.
+ * 
+ * @author martin
+ *
+ */
 public class FryJ2KTransformerImpl extends AbstractFuturamaJ2KTransformer {
 	public static final String NAME = "Fry";
 
@@ -35,15 +44,9 @@ public class FryJ2KTransformerImpl extends AbstractFuturamaJ2KTransformer {
 	}
 
 	@Override
-	protected JackValueType tryToInferTypeOf(KlaxonEntry klaxon)
-			throws JackToKlaxonException {
+	protected JackValueType tryToInferTypeOf(KlaxonValue klaxon) throws JackToKlaxonException {
 		try {
-			if (!(klaxon instanceof KlaxonAbstractElement)) {
-				return null;
-			}
-
-			KlaxonAbstractElement elem = (KlaxonAbstractElement) klaxon;
-			KlaxonAttribute attr = elem.getAttribute(TYPE_ATTR_NAME);
+			KlaxonStringValue attr = (KlaxonStringValue) klaxon.findFirst(TYPE_ATTR_NAME);
 
 			if (attr == null) {
 				return null;
@@ -51,36 +54,38 @@ public class FryJ2KTransformerImpl extends AbstractFuturamaJ2KTransformer {
 
 			String value = attr.getValue();
 			return raj.createType(value);
+
 		} catch (JackException | IllegalArgumentException e) {
 			throw new JackToKlaxonException("Missing or invalid type", e);
 		}
 	}
 
 	@Override
-	protected Entry<JackValue, JackValue> inferEntryOfMap(
-			KlaxonAbstractElement klaxon) throws JackToKlaxonException {
+	protected Entry<JackValue, JackValue> inferEntryOfMap(KlaxonValue klaxon) throws JackToKlaxonException {
 
 		if (!klaxon.getName().equals(ENTRY_ELEM_NAME)) {
-			Exception e = new IllegalArgumentException("Required "
-					+ ENTRY_ELEM_NAME + " element.");
-			throw new JackToKlaxonException("Invalid elemnt", e);
+			Exception e = new IllegalArgumentException("Required " + ENTRY_ELEM_NAME + " element.");
+			throw new JackToKlaxonException("Invalid element", e);
 		}
+		if (!(klaxon instanceof KlaxonObject)) {
+			Exception e = new IllegalArgumentException("Not a KlaxonObject");
+			throw new JackToKlaxonException("Invalid element type", e);
+		}
+		KlaxonObject object = (KlaxonObject) klaxon;
 
-		KlaxonEntry keyEntry = klaxon.asEntries().getFirst(KEY_ENTRY_NAME);
+		KlaxonValue keyEntry = object.findFirst(KEY_ENTRY_NAME);
 		JackValue keyValue = klaxonEntryToJackValue(null, keyEntry);
 
-		KlaxonEntry valueEntry = klaxon.asEntries().getFirst(VALUE_ENTRY_NAME);
+		KlaxonValue valueEntry = object.findFirst(VALUE_ENTRY_NAME);
 		JackValue valueValue = klaxonEntryToJackValue(null, valueEntry);
 
 		return new AbstractMap.SimpleImmutableEntry<>(keyValue, valueValue);
 	}
 
 	@Override
-	protected JackValue inferCollectionItem(KlaxonAbstractElement child)
-			throws JackToKlaxonException {
+	protected JackValue inferCollectionItem(KlaxonValue child) throws JackToKlaxonException {
 		if (!child.getName().equals(COLLECTION_ITEM_NAME)) {
-			Exception e = new IllegalArgumentException("Required "
-					+ COLLECTION_ITEM_NAME + " element.");
+			Exception e = new IllegalArgumentException("Required " + COLLECTION_ITEM_NAME + " element.");
 			throw new JackToKlaxonException("Invalid elemnt", e);
 		}
 
@@ -94,18 +99,61 @@ public class FryJ2KTransformerImpl extends AbstractFuturamaJ2KTransformer {
 	}
 
 	@Override
-	protected void addJackMetadata(JackValue jack, JackValueType expectedType,
-			EntriesCollection entries) {
+	protected List<KlaxonValue> getJackMetadata(JackValue jack, JackValueType expectedType) {
+		List<KlaxonValue> result = new ArrayList<>();
 
-		// TODO if expected !=null && expected !=jack.type ||
-		// jack.type.isWrapperOf(expectedType)
-		if (expectedType == null) {
-			JackValueType type = jack.getType();
-			String string = type.getTypeAsString();
-			KlaxonAttribute attr = new KlaxonAttribute(TYPE_ATTR_NAME, string);
-			entries.add(attr);
+		if (isToAddType(jack, expectedType)) {
+			addTypeAttr(jack, result);
 		}
 
+		return result;
+	}
+
+	/**
+	 * Returns true if given jack in field (if so) of given expectedType
+	 * requires add type information or not.
+	 * 
+	 * @param jack
+	 * @param expectedType
+	 * @return
+	 */
+	protected boolean isToAddType(JackValue jack, JackValueType expectedType) {
+		JackValueType type = jack.getType();
+
+		if (expectedType == null) {
+			return true;
+		}
+
+		if (type.equals(expectedType)) {
+			return false;
+		}
+
+		if (expectedType.getType().isPrimitive()) {
+			Class<?> wrapper = Primitives.getWrappers().get(type);
+			if (type.equals(wrapper)) {
+				return false;
+			}
+		}
+
+		if (ReflectionAndJack.representsTypeChildOf(type, expectedType.getType())) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Adds type attribute of given jack value int given klaxon values.
+	 * 
+	 * @param jack
+	 * @param result
+	 */
+	protected void addTypeAttr(JackValue jack, List<KlaxonValue> result) {
+		JackValueType type = jack.getType();
+		String string = type.getTypeAsString();
+		KlaxonStringValue attr = new KlaxonStringValue(TYPE_ATTR_NAME, string);
+
+		result.add(attr);
 	}
 
 	@Override
@@ -114,19 +162,17 @@ public class FryJ2KTransformerImpl extends AbstractFuturamaJ2KTransformer {
 	}
 
 	@Override
-	protected KlaxonEntry jackMapEntryToKlaxon(JackValue key, JackValue value)
-			throws JackToKlaxonException {
+	protected KlaxonValue jackMapEntryToKlaxon(JackValue key, JackValue value) throws JackToKlaxonException {
 
-		EntriesCollection entries = new EntriesCollection();
+		List<KlaxonValue> fields = new ArrayList<>();
 
-		KlaxonEntry keyKlaxon = jackValueToKlaxonElem(KEY_ENTRY_NAME, null, key);
-		entries.add(keyKlaxon);
+		KlaxonValue keyKlaxon = jackValueToKlaxonElem(KEY_ENTRY_NAME, null, key);
+		fields.add(keyKlaxon);
 
-		KlaxonEntry valueKlaxon = jackValueToKlaxonElem(VALUE_ENTRY_NAME, null,
-				value);
-		entries.add(valueKlaxon);
+		KlaxonValue valueKlaxon = jackValueToKlaxonElem(VALUE_ENTRY_NAME, null, value);
+		fields.add(valueKlaxon);
 
-		return new KlaxonElemWithChildren(ENTRY_ELEM_NAME, entries);
+		return new KlaxonObject(ENTRY_ELEM_NAME, fields);
 	}
 
 }

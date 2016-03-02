@@ -1,10 +1,17 @@
 package cz.martlin.jaxon.j2k.transformer;
 
+import cz.martlin.jaxon.abstracts.HasName;
 import cz.martlin.jaxon.j2k.data.JackToKlaxonException;
 import cz.martlin.jaxon.jack.data.values.JackObject;
-import cz.martlin.jaxon.klaxon.data.KlaxonAbstractElement;
+import cz.martlin.jaxon.klaxon.data.KlaxonObject;
 
-public interface JackObjectsTransformer {
+/**
+ * Represents abstract transformer between JackObjects and KlaxonObjects.
+ * 
+ * @author martin
+ *
+ */
+public interface JackObjectsTransformer extends HasName {
 
 	/**
 	 * Returns name of this transforming technique (for check)
@@ -20,8 +27,7 @@ public interface JackObjectsTransformer {
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	public JackObject toJack(KlaxonAbstractElement klaxon)
-			throws JackToKlaxonException;
+	public JackObject toJack(KlaxonObject klaxon) throws JackToKlaxonException;
 
 	/**
 	 * Converts jack object to klaxon element.
@@ -30,7 +36,6 @@ public interface JackObjectsTransformer {
 	 * @return
 	 * @throws JackToKlaxonException
 	 */
-	public KlaxonAbstractElement toKlaxon(JackObject jack)
-			throws JackToKlaxonException;
+	public KlaxonObject toKlaxon(JackObject jack) throws JackToKlaxonException;
 
 }

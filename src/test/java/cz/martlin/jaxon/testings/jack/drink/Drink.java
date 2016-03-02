@@ -1,12 +1,20 @@
-package cz.martlin.jaxon.testings.jack;
+package cz.martlin.jaxon.testings.jack.drink;
 
 import java.io.File;
 import java.util.Date;
 import java.util.List;
 
 import cz.martlin.jaxon.jack.abstracts.JackSerializable;
-import cz.martlin.jaxon.testings.jaxon.Person;
+import cz.martlin.jaxon.testings.jaxon.person.Person;
 
+/**
+ * Represents simple dring. Drinh has name, type (hot/cold), volume optionally
+ * amount of alcohol, ingredients list and menu data (photo, cost and info about
+ * adding to menu (who and when)).
+ * 
+ * @author martin
+ *
+ */
 public class Drink implements JackSerializable {
 	private String name;
 	private DrinkType type;
@@ -105,8 +113,7 @@ public class Drink implements JackSerializable {
 		temp = Double.doubleToLongBits(cost);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((image == null) ? 0 : image.hashCode());
-		result = prime * result
-				+ ((ingredients == null) ? 0 : ingredients.hashCode());
+		result = prime * result + ((ingredients == null) ? 0 : ingredients.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((since == null) ? 0 : since.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -133,8 +140,7 @@ public class Drink implements JackSerializable {
 				return false;
 		} else if (!alcohol.equals(other.alcohol))
 			return false;
-		if (Double.doubleToLongBits(cost) != Double
-				.doubleToLongBits(other.cost))
+		if (Double.doubleToLongBits(cost) != Double.doubleToLongBits(other.cost))
 			return false;
 		if (image == null) {
 			if (other.image != null)
@@ -165,10 +171,9 @@ public class Drink implements JackSerializable {
 
 	@Override
 	public String toString() {
-		return "Drink [name=" + name + ", type=" + type + ", volume=" + volume
-				+ ", alcohol=" + alcohol + ", ingredients=" + ingredients
-				+ ", image=" + image + ", since=" + since + ", addedBy="
-				+ addedBy + ", cost=" + cost + "]";
+		return "Drink [name=" + name + ", type=" + type + ", volume=" + volume + ", alcohol=" + alcohol
+				+ ", ingredients=" + ingredients + ", image=" + image + ", since=" + since + ", addedBy=" + addedBy
+				+ ", cost=" + cost + "]";
 	}
 
 }

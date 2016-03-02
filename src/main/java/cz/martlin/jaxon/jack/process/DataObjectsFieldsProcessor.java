@@ -17,7 +17,7 @@ import cz.martlin.jaxon.jack.data.values.JackObject;
 import cz.martlin.jaxon.jack.data.values.JackValue;
 
 /**
- * Processes data objects.
+ * Processes data objects ( JackSerializable objects).
  * 
  * @author martin
  * 
@@ -87,7 +87,7 @@ public class DataObjectsFieldsProcessor extends ValueTypeProcessor {
 			JackToKlaxonSerializable serializable = (JackToKlaxonSerializable) object;
 			return serializable.jaxonDescription();
 		}
-		
+
 		return null;
 	}
 

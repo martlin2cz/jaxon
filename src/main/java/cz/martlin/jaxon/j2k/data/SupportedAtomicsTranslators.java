@@ -3,8 +3,6 @@ package cz.martlin.jaxon.j2k.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtFromKlaxonStyle;
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtToKlaxonStyle;
 import cz.martlin.jaxon.j2k.translator.AtomicValueTranslator;
 import cz.martlin.jaxon.j2k.translator.PrimitivesTranslators;
 import cz.martlin.jaxon.j2k.translators.BigDecimalTranslator;
@@ -19,41 +17,45 @@ import cz.martlin.jaxon.j2k.translators.StringTranslator;
 import cz.martlin.jaxon.j2k.translators.URLTranslator;
 import cz.martlin.jaxon.jack.data.design.JackValueType;
 
+/**
+ * Represents currently supported atomic translators.
+ * 
+ * @see AtomicValueTranslator
+ * @author martin
+ *
+ */
 public class SupportedAtomicsTranslators {
 
 	private final J2KConfig config;
-	private final AtmValFrmtToKlaxonStyle toKlaxonStyle;
-	private final AtmValFrmtFromKlaxonStyle fromKlaxonStyle;
 
-	private final List<AtomicValueTranslator<?>> transformers;
+	private final List<AtomicValueTranslator<?>> translators;
 
 	public SupportedAtomicsTranslators(J2KConfig config) {
 		super();
 		this.config = config;
-		this.toKlaxonStyle = config.getAVFStyleToKlaxon();
-		this.fromKlaxonStyle = config.getAVFStyleFromKlaxon();
-		this.transformers = list();
+		this.translators = list();
 	}
 
-	public SupportedAtomicsTranslators(J2KConfig config, //
-			AtmValFrmtToKlaxonStyle toKlaxonStyle, AtmValFrmtFromKlaxonStyle fromKlaxonStyle) {
-		super();
-		this.config = config;
-		this.toKlaxonStyle = toKlaxonStyle;
-		this.fromKlaxonStyle = fromKlaxonStyle;
-		this.transformers = list();
+	/**
+	 * Returns currently supported translators.
+	 * 
+	 * @return
+	 */
+	public Iterable<AtomicValueTranslator<?>> getTranslators() {
+		return translators;
 	}
 
-	public Iterable<AtomicValueTranslator<?>> getTransformers() {
-		return transformers;
-	}
-
+	/**
+	 * Lists translators.
+	 * 
+	 * @return
+	 */
 	private List<AtomicValueTranslator<?>> list() {
 
 		List<AtomicValueTranslator<?>> transformers = new ArrayList<>();
 
-		addBaseTranslators(transformers, toKlaxonStyle, fromKlaxonStyle);
-		addCustomTranslators(transformers, toKlaxonStyle, fromKlaxonStyle, config);
+		addBaseTranslators(transformers);
+		addCustomTranslators(transformers, config);
 
 		return transformers;
 	}
@@ -65,14 +67,12 @@ public class SupportedAtomicsTranslators {
 	 * @param toKlaxonStyle
 	 * @param fromKlaxonStyle
 	 */
-	private static void addBaseTranslators(List<AtomicValueTranslator<?>> transformers,
-			AtmValFrmtToKlaxonStyle toKlaxonStyle, AtmValFrmtFromKlaxonStyle fromKlaxonStyle) {
+	private static void addBaseTranslators(List<AtomicValueTranslator<?>> transformers) {
 
-		transformers.addAll(PrimitivesTranslators.getTranslators(//
-				toKlaxonStyle, fromKlaxonStyle));
+		transformers.addAll(PrimitivesTranslators.getTranslators());
 
-		transformers.add(new StringTranslator(toKlaxonStyle, fromKlaxonStyle));
-		transformers.add(new EnumsTranslator<>(toKlaxonStyle, fromKlaxonStyle));
+		transformers.add(new StringTranslator());
+		transformers.add(new EnumsTranslator<>());
 
 		// TODO anything?
 	}
@@ -86,25 +86,32 @@ public class SupportedAtomicsTranslators {
 	 * @param fromKlaxonStyle
 	 * @param config
 	 */
-	private static void addCustomTranslators(List<AtomicValueTranslator<?>> transformers,
-			AtmValFrmtToKlaxonStyle toKlaxonStyle, AtmValFrmtFromKlaxonStyle fromKlaxonStyle, J2KConfig config) {
+	private static void addCustomTranslators(List<AtomicValueTranslator<?>> transformers, J2KConfig config) {
 
-		transformers.add(new BigDecimalTranslator(toKlaxonStyle, fromKlaxonStyle));
-		transformers.add(new CalendarTranslator(config, toKlaxonStyle, fromKlaxonStyle));
-		transformers.add(new ColorTranslator(toKlaxonStyle, fromKlaxonStyle));
-		transformers.add(new DateTranslator(config, toKlaxonStyle, fromKlaxonStyle));
-		transformers.add(new FileTranslator(toKlaxonStyle, fromKlaxonStyle));
-		transformers.add(new PointTranslator(toKlaxonStyle, fromKlaxonStyle));
-		transformers.add(new URLTranslator(toKlaxonStyle, fromKlaxonStyle));
-		transformers.add(new SimpleDateFormatTranslator(toKlaxonStyle, fromKlaxonStyle));
-		
-		// TODO others -  URI, Rectangle, ... ? ...
+		transformers.add(new BigDecimalTranslator());
+		transformers.add(new CalendarTranslator(config));
+		transformers.add(new ColorTranslator());
+		transformers.add(new DateTranslator(config));
+		transformers.add(new FileTranslator());
+		transformers.add(new PointTranslator());
+		transformers.add(new URLTranslator());
+		transformers.add(new SimpleDateFormatTranslator());
+
+		// TODO others - URI, Dimension, Rectangle, ... ? ...
 
 	}
 
+	/**
+	 * Finds translator for given type. Throws excepton if no such translator is
+	 * found for given type.
+	 * 
+	 * @param type
+	 * @return
+	 * @throws JackToKlaxonException
+	 */
 	public AtomicValueTranslator<?> find(JackValueType type) throws JackToKlaxonException {
 
-		for (AtomicValueTranslator<?> transformer : transformers) {
+		for (AtomicValueTranslator<?> transformer : translators) {
 			if (transformer.isApplicableTo(type)) {
 				return transformer;
 			}

@@ -1,8 +1,15 @@
-package cz.martlin.jaxon.testings.j2k;
+package cz.martlin.jaxon.testings.j2k.pet;
 
 import cz.martlin.jaxon.j2k.abstracts.JackToKlaxonSerializable;
 import cz.martlin.jaxon.jack.abstracts.JackSerializable;
 
+/**
+ * Simple pet class. Has only name, gender, legs (if so) and flag if it can
+ * swim.
+ * 
+ * @author martin
+ *
+ */
 public class Pet implements JackSerializable, JackToKlaxonSerializable {
 
 	private String name;
@@ -84,8 +91,7 @@ public class Pet implements JackSerializable, JackToKlaxonSerializable {
 
 	@Override
 	public String toString() {
-		return "Pet [name=" + name + ", gender=" + gender + ", legs=" + legs
-				+ ", canSwim=" + canSwim + "]";
+		return "Pet [name=" + name + ", gender=" + gender + ", legs=" + legs + ", canSwim=" + canSwim + "]";
 	}
 
 	@Override

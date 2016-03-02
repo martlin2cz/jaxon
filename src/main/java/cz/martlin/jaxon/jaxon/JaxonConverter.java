@@ -9,15 +9,19 @@ import cz.martlin.jaxon.j2k.JackToKlaxonConverter;
 import cz.martlin.jaxon.j2k.data.J2KConfig;
 import cz.martlin.jaxon.j2k.data.SupportedTransformers;
 import cz.martlin.jaxon.j2k.transformer.J2KBaseTransformer;
-import cz.martlin.jaxon.j2k.transformer.JackObjectsTransformer;
-import cz.martlin.jaxon.j2k.transformers.FryJ2KTransformerImpl;
-import cz.martlin.jaxon.j2k.transformers.J2KTransformWithRootObjSimpleImpl;
 import cz.martlin.jaxon.jack.JackConverter;
 import cz.martlin.jaxon.jack.data.values.JackObject;
 import cz.martlin.jaxon.k2xml.KlaxonToXMLConverter;
 import cz.martlin.jaxon.klaxon.KlaxonConverter;
-import cz.martlin.jaxon.klaxon.data.KlaxonAbstractElement;
+import cz.martlin.jaxon.klaxon.data.KlaxonObject;
 
+/**
+ * The Jaxon main entry. Implements conversion between objets and vairious xml
+ * types.
+ * 
+ * @author martin
+ *
+ */
 public class JaxonConverter {
 
 	private final JackConverter jack;
@@ -33,24 +37,32 @@ public class JaxonConverter {
 	}
 
 	public JaxonConverter(Config config) {
-		this(config, defaultTransformer(config));
+		this(config, findTransformer(config));
 	}
 
-	public JaxonConverter(Config config, String baseTransformerName, String objectsTransformerName) {
-		this(config, findTransformer(config, objectsTransformerName, baseTransformerName));
-	}
-
-	
-
+	/**
+	 * Converts given object to document.
+	 * 
+	 * @param object
+	 * @return
+	 * @throws JaxonException
+	 */
 	private Document objectToDocument(Object object) throws JaxonException {
 		JackObject jackObject = jack.toJack(object);
-		KlaxonAbstractElement klaxonEntry = j2k.jackToKlaxon(jackObject);
+		KlaxonObject klaxonEntry = j2k.jackToKlaxon(jackObject);
 		Document document = klaxon.toDocument(klaxonEntry);
 		return document;
 	}
 
+	/**
+	 * Converts given document do object.
+	 * 
+	 * @param document
+	 * @return
+	 * @throws JaxonException
+	 */
 	private Object documentToObject(Document document) throws JaxonException {
-		KlaxonAbstractElement klaxonEntry = klaxon.toKlaxon(document);
+		KlaxonObject klaxonEntry = klaxon.toKlaxon(document);
 		JackObject jackObject = j2k.klaxonToJack(klaxonEntry);
 		Object object = jack.toObject(jackObject);
 		return object;
@@ -104,16 +116,11 @@ public class JaxonConverter {
 		return documentToObject(document);
 	}
 
-	
-	private static J2KBaseTransformer defaultTransformer(Config config) {
-		JackObjectsTransformer objects = new FryJ2KTransformerImpl(config);
-		J2KBaseTransformer base = new J2KTransformWithRootObjSimpleImpl(objects);
-		return base;
-	}
-
-	private static J2KBaseTransformer findTransformer(J2KConfig config, String objectsTransformerName,
-			String baseTransformerName) {
+	private static J2KBaseTransformer findTransformer(J2KConfig config) {
+		String baseTransformerName = config.getBaseTransformerName();
+		String objectsTransformerName = config.getObjectsTransformerName();
 		SupportedTransformers transformers = new SupportedTransformers();
+
 		return transformers.find(config, baseTransformerName, objectsTransformerName);
 	}
 }

@@ -3,6 +3,7 @@ package cz.martlin.jaxon.jack;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +27,10 @@ public class ReflectionAndJack {
 	private static final String OTHER_GETTER_PREFIX = "get";
 	private static final String BOOL_GETTER_PREFIX = "is";
 
+	private final JackConfig config;
+	
 	public ReflectionAndJack(JackConfig config) {
+		this.config = config;
 	}
 
 	/**
@@ -94,7 +98,7 @@ public class ReflectionAndJack {
 	public List<JackObjectField> getFields(JackValueType type) {
 		Class<?> clazz = type.getType();
 
-		List<Field> fields = getFields(clazz);
+		List<Field> fields = getAllFields(clazz);
 
 		return toJackFields(fields);
 	}
@@ -105,11 +109,16 @@ public class ReflectionAndJack {
 	 * @param clazz
 	 * @return
 	 */
-	private List<Field> getFields(Class<?> clazz) {
+	private List<Field> getAllFields(Class<?> clazz) {
 		Field[] fields = clazz.getDeclaredFields();
 
-		List<Field> javas = Arrays.asList(fields);
+		List<Field> javas = new ArrayList<>(Arrays.asList(fields));
 
+		if (clazz.getSuperclass() != null) {
+			List<Field> subs = getAllFields(clazz.getSuperclass());
+			javas.addAll(subs);
+		}
+		
 		return javas;
 	}
 
@@ -123,6 +132,13 @@ public class ReflectionAndJack {
 		List<JackObjectField> result = new ArrayList<>(fields.size());
 
 		for (Field field : fields) {
+			
+			if (config.isIgnoringFinalFields()) {
+				if (Modifier.isFinal(field.getModifiers())) {
+					continue;
+				}
+			}
+			
 			JackObjectField jack = fieldToJackField(field);
 			result.add(jack);
 		}
@@ -255,7 +271,7 @@ public class ReflectionAndJack {
 		} catch (IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			throw new JackException("Could not invoke setter "
-					+ setter.getName(), e);
+					+ setter.getName() + " with value " + value, e);
 		}
 	}
 

@@ -8,7 +8,7 @@ import cz.martlin.jaxon.jack.data.design.JackValueType;
 import cz.martlin.jaxon.utils.Utils;
 
 /**
- * Represents collection of objects. In fact, encapsulates every of java
+ * Represents collection of values. In fact, encapsulates every of java
  * {@link Collection} implementation.
  * 
  * @author martin

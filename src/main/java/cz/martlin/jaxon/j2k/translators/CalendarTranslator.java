@@ -4,18 +4,21 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtFromKlaxonStyle;
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtToKlaxonStyle;
 import cz.martlin.jaxon.j2k.data.J2KConfig;
 import cz.martlin.jaxon.j2k.serializer.AbstractToStringSerializer;
 import cz.martlin.jaxon.j2k.translator.SingleValuedTranslator;
 import cz.martlin.jaxon.jack.data.design.JackValueType;
 
+/**
+ * Represents translator of {@link Calendar}.
+ * 
+ * @author martin
+ *
+ */
 public class CalendarTranslator extends SingleValuedTranslator<Calendar> {
 
-	public CalendarTranslator(J2KConfig config, AtmValFrmtToKlaxonStyle toKlaxonStyle,
-			AtmValFrmtFromKlaxonStyle fromKlaxonStyle) {
-		super(new CalendarToStringSerializer(config), toKlaxonStyle, fromKlaxonStyle);
+	public CalendarTranslator(J2KConfig config) {
+		super(new CalendarToStringSerializer(config));
 	}
 
 	public static class CalendarToStringSerializer implements AbstractToStringSerializer<Calendar> {

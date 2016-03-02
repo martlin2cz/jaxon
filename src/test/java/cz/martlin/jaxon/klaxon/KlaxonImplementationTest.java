@@ -3,38 +3,39 @@ package cz.martlin.jaxon.klaxon;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import cz.martlin.jaxon.config.Config;
-import cz.martlin.jaxon.config.ImplProvider;
 import cz.martlin.jaxon.k2xml.KlaxonToXMLException;
 import cz.martlin.jaxon.k2xml.KlaxonToXMLImpl;
-import cz.martlin.jaxon.klaxon.data.KlaxonAbstractElement;
-import cz.martlin.jaxon.klaxon.data.KlaxonAttribute;
-import cz.martlin.jaxon.klaxon.data.KlaxonElemWithChildren;
-import cz.martlin.jaxon.klaxon.data.KlaxonEntry;
-import cz.martlin.jaxon.testings.klaxon.FoodKlaxonCreator;
+import cz.martlin.jaxon.klaxon.config.K2DocFormat;
+import cz.martlin.jaxon.klaxon.data.KlaxonObject;
+import cz.martlin.jaxon.klaxon.data.KlaxonStringValue;
+import cz.martlin.jaxon.klaxon.data.KlaxonValue;
+import cz.martlin.jaxon.testings.klaxon.food.FoodKlaxonCreator;
 
+/**
+ * Tests {@link KlaxonFromElementsImpl}.
+ * @author martin
+ *
+ */
 public class KlaxonImplementationTest {
 
-	private final Config config = ImplProvider.getTestingConfig();
-	private final KlaxonImplementation impl = new KlaxonImplementation(config);
+	private final Config config = new Config();
+	private final KlaxonToElementsImpl toElems = new KlaxonToElementsImpl(config);
+	private final KlaxonFromElementsImpl fromElems = new KlaxonFromElementsImpl(config);
 
 	private final FoodKlaxonCreator foods = FoodKlaxonCreator.createHamburger();
 
 	@Test
-	public void testCreateElementOfKlaxon() throws KlaxonException,
-			KlaxonToXMLException {
-		KlaxonAbstractElement klaxon = foods.createKlaxon();
-		Document document = KlaxonToXMLImpl.createDocument();
-		Element elem = impl.createElementOfKlaxon(document, klaxon);
+	public void testCreateElementWithAttrsWherePossible() throws KlaxonException, KlaxonToXMLException {
+
+		Element elem = calculateElem(K2DocFormat.ATTRS_WHERE_POSSIBLE);
 
 		// check name
 		assertEquals("food", elem.getNodeName());
@@ -43,57 +44,342 @@ public class KlaxonImplementationTest {
 		assertEquals(3, elem.getAttributes().getLength());
 		assertEquals("Hamburger", elem.getAttribute("name"));
 		assertEquals("39.9", elem.getAttribute("cost"));
+		assertEquals("NO", elem.getAttribute("forChildren"));
 
 		// check children
-		assertEquals(3, elem.getChildNodes().getLength());
+		NodeList children = elem.getChildNodes();
+		assertEquals(3, children.getLength());
+
 		// ingredients
-		assertEquals("ingredients", elem.getChildNodes().item(0).getNodeName());
-		assertEquals(2, elem.getChildNodes().item(0).getChildNodes()
-				.getLength());
+		Element ingredients = (Element) children.item(0);
+		assertEquals("ingredients", ingredients.getNodeName());
+		assertEquals(2, ingredients.getChildNodes().getLength());
+
+		// ingredient1 and 2
+		Element ingredient1 = (Element) ingredients.getChildNodes().item(0);
+		assertEquals("ingredient", ingredient1.getNodeName());
+		assertEquals("Ham", ingredient1.getAttribute("value"));
+
+		Element ingredient2 = (Element) ingredients.getChildNodes().item(1);
+		assertEquals("ingredient", ingredient2.getNodeName());
+		assertEquals("2 pieces", ingredient2.getAttribute("amount"));
+		assertEquals("Burger", ingredient2.getAttribute("value"));
+
 		// photo
-		assertEquals("photo", elem.getChildNodes().item(1).getNodeName());
-		assertEquals("jpg", elem.getChildNodes().item(1).getAttributes()
-				.getNamedItem("format").getNodeValue());
+		Element photo = (Element) children.item(1);
+		assertEquals("photo", photo.getNodeName());
+		assertEquals("jpg", photo.getAttribute("format"));
+		assertEquals("~/photos/hamburger.jpg", photo.getAttribute("value"));
 
-		assertEquals("reciepe", elem.getChildNodes().item(2).getNodeName());
-
+		// reciepe
+		Element reciepe = (Element) children.item(2);
+		assertEquals("reciepe", reciepe.getNodeName());
+		assertEquals("en", reciepe.getAttribute("lang"));
+		assertEquals("Take ham and burgers and make a hamburger", reciepe.getAttribute("value"));
 	}
 
 	@Test
-	public void testParseKlaxonFromElement() throws KlaxonException,
-			KlaxonToXMLException {
+	public void testCreateElementWithAttrsOnHeadersOnly() throws KlaxonException, KlaxonToXMLException {
+
+		Element elem = calculateElem(K2DocFormat.ATTRS_FOR_HEADERS);
+
+		// check name
+		assertEquals("food", elem.getNodeName());
+
+		// check attributes
+		assertEquals(1, elem.getAttributes().getLength());
+		assertEquals("Hamburger", elem.getAttribute("name"));
+
+		// check children
+		NodeList children = elem.getChildNodes();
+		assertEquals(5, children.getLength());
+
+		// check cost and forChildren
+		assertEquals("cost", children.item(0).getNodeName());
+		assertEquals("39.9", children.item(0).getFirstChild().getNodeValue());
+
+		assertEquals("forChildren", children.item(1).getNodeName());
+		assertEquals("NO", children.item(1).getFirstChild().getNodeValue());
+
+		// ingredients
+		Element ingredients = (Element) children.item(2);
+		assertEquals("ingredients", ingredients.getNodeName());
+		assertEquals(2, ingredients.getChildNodes().getLength());
+
+		// ingredient1 and 2
+		Element ingredient1 = (Element) ingredients.getChildNodes().item(0);
+		assertEquals("ingredient", ingredient1.getNodeName());
+		assertEquals("Ham", ingredient1.getFirstChild().getNodeValue());
+
+		Element ingredient2 = (Element) ingredients.getChildNodes().item(1);
+		assertEquals("ingredient", ingredient2.getNodeName());
+		assertEquals("2 pieces", ingredient2.getAttribute("amount"));
+		assertEquals("Burger", ingredient2.getFirstChild().getNodeValue());
+
+		// photo
+		Element photo = (Element) children.item(3);
+		assertEquals("photo", photo.getNodeName());
+		assertEquals("jpg", photo.getAttribute("format"));
+		assertEquals("~/photos/hamburger.jpg", photo.getFirstChild().getNodeValue());
+
+		// reciepe
+		Element reciepe = (Element) children.item(4);
+		assertEquals("reciepe", reciepe.getNodeName());
+		assertEquals("en", reciepe.getAttribute("lang"));
+		assertEquals("Take ham and burgers and make a hamburger", reciepe.getFirstChild().getNodeValue());
+	}
+
+	@Test
+	public void testCreateElementWithChildrenEverywhere() throws KlaxonException, KlaxonToXMLException {
+
+		Element elem = calculateElem(K2DocFormat.CHILDREN_EVERYWHERE);
+
+		// check name
+		assertEquals("food", elem.getNodeName());
+
+		// check children
+		NodeList children = elem.getChildNodes();
+		assertEquals(6, children.getLength());
+
+		// check name, cost and forChildren
+		assertEquals("name", children.item(0).getNodeName());
+		assertEquals("Hamburger", children.item(0).getFirstChild().getNodeValue());
+
+		assertEquals("cost", children.item(1).getNodeName());
+		assertEquals("39.9", children.item(1).getFirstChild().getNodeValue());
+
+		assertEquals("forChildren", children.item(2).getNodeName());
+		assertEquals("NO", children.item(2).getFirstChild().getNodeValue());
+
+		// ingredients
+		Element ingredients = (Element) children.item(3);
+		assertEquals("ingredients", ingredients.getNodeName());
+		assertEquals(2, ingredients.getChildNodes().getLength());
+
+		// ingredient1 and ingradient 2
+		Element ingredient1 = (Element) ingredients.getChildNodes().item(0);
+		assertEquals("ingredient", ingredient1.getNodeName());
+		assertEquals("Ham", ingredient1.getFirstChild().getNodeValue());
+
+		Element ingredient2 = (Element) ingredients.getChildNodes().item(1);
+		assertEquals("ingredient", ingredient2.getNodeName());
+		assertEquals("amount", ingredient2.getChildNodes().item(0).getNodeName());
+		assertEquals("2 pieces", ingredient2.getChildNodes().item(0).getFirstChild().getNodeValue());
+		assertEquals("ingredient", ingredient2.getChildNodes().item(1).getNodeName());
+		assertEquals("Burger", ingredient2.getChildNodes().item(1).getFirstChild().getNodeValue());
+
+		// photo
+		Element photo = (Element) children.item(4);
+		assertEquals("photo", photo.getNodeName());
+		assertEquals("format", photo.getChildNodes().item(0).getNodeName());
+		assertEquals("jpg", photo.getChildNodes().item(0).getFirstChild().getNodeValue());
+		assertEquals("photo", photo.getChildNodes().item(1).getNodeName());
+		assertEquals("~/photos/hamburger.jpg", photo.getChildNodes().item(1).getFirstChild().getNodeValue());
+
+		// reciepe...
+		Element reciepe = (Element) children.item(5);
+		assertEquals("reciepe", reciepe.getNodeName());
+		assertEquals("lang", reciepe.getChildNodes().item(0).getNodeName());
+		assertEquals("en", reciepe.getChildNodes().item(0).getFirstChild().getNodeValue());
+		assertEquals("reciepe", reciepe.getChildNodes().item(1).getNodeName());
+		assertEquals("Take ham and burgers and make a hamburger",
+				reciepe.getChildNodes().item(1).getFirstChild().getNodeValue());
+
+	}
+
+	private Element calculateElem(K2DocFormat format) throws KlaxonToXMLException, KlaxonException {
+
+		config.setFormat(format);
+
+		KlaxonObject klaxon = foods.createKlaxon();
 		Document document = KlaxonToXMLImpl.createDocument();
-		Element elem = foods.createElement(document);
+		Element elem = toElems.createElementOfKlaxon(document, klaxon);
 
-		KlaxonElemWithChildren klaxon = (KlaxonElemWithChildren) impl
-				.parseKlaxonFromElement(document, elem);
+		document.appendChild(elem);
 
-		// klaxon.print(0, System.out);
+		// System.out.println(format + ":");
+		// System.out.println(KlaxonTestUtils.toString(document));
+
+		return elem;
+	}
+
+	@Test
+	public void testParseKlaxonFromElementWithAttrsWherePossible() throws KlaxonException, KlaxonToXMLException {
+		KlaxonObject klaxon = calculateKlaxon(K2DocFormat.ATTRS_WHERE_POSSIBLE);
 
 		// check name
 		assertEquals("food", klaxon.getName());
 
-		// check attributes
-		Set<KlaxonAttribute> attrs = new TreeSet<>(klaxon.getAttributes());
-		assertEquals(3, attrs.size());
+		// check headers
+		List<KlaxonValue> headers = klaxon.getHeaders();
+		assertEquals(3, headers.size());
 
-		KlaxonEntry name = new KlaxonAttribute("name", "Hamburger");
-		assertTrue(attrs.contains(name));
+		KlaxonStringValue name = new KlaxonStringValue("name", "Hamburger");
+		assertTrue(headers.contains(name));
 
-		KlaxonEntry cost = new KlaxonAttribute("cost", "39");
-		assertTrue(attrs.contains(cost));
-		// ...
+		KlaxonStringValue cost = new KlaxonStringValue("cost", "39.9");
+		assertTrue(headers.contains(cost));
 
-		// and children
-		List<KlaxonAbstractElement> children = new ArrayList<>(
-				klaxon.getChildren());
-		assertEquals(3, children.size());
+		KlaxonStringValue forChildren = new KlaxonStringValue("forChildren", "NO");
+		assertTrue(headers.contains(forChildren));
 
-		KlaxonEntry photo = KlaxonTestUtils.createWithOneAttr(//
+		// check fields
+		List<KlaxonValue> fields = klaxon.getFields();
+		assertEquals(3, fields.size());
+
+		// ingredients
+		KlaxonObject ingredients = (KlaxonObject) fields.get(0);
+		KlaxonValue ingredient1 = KlaxonTestUtils.createWithOneHeader(//
+				"ingredient", "ingredient", "Ham", null);
+		KlaxonValue ingredient2 = KlaxonTestUtils.createWithTwoHeaders(//
+				"ingredient", "amount", "2 pieces", "ingredient", "Burger", null);
+
+		// assertEquals(ingredient1.toString(),
+		// ingredients.getFields().get(0).toString());
+		// assertEquals(ingredient2.toString(),
+		// ingredients.getFields().get(1).toString());
+
+		assertEquals(ingredient1, ingredients.getFields().get(0));
+		assertEquals(ingredient2, ingredients.getFields().get(1));
+
+		// photo
+		KlaxonValue photo = KlaxonTestUtils.createWithTwoHeaders(//
+				"photo", "format", "jpg", "value", "~/photos/hamburger.jpg", null);
+		assertEquals(photo, fields.get(1));
+
+		// reciepe
+		KlaxonValue reciepe = KlaxonTestUtils.createWithTwoHeaders(//
+				"reciepe", "lang", "en", "value", "Take ham and burgers and make a hamburger", null);
+		assertEquals(reciepe, fields.get(2));
+	}
+
+	@Test
+	public void testParseKlaxonFromElementWithAttrsForHeaders() throws KlaxonException, KlaxonToXMLException {
+		KlaxonObject klaxon = calculateKlaxon(K2DocFormat.ATTRS_FOR_HEADERS);
+
+		// check name
+		assertEquals("food", klaxon.getName());
+
+		// check headers
+		List<KlaxonValue> headers = klaxon.getHeaders();
+		assertEquals(1, headers.size());
+
+		KlaxonStringValue name = new KlaxonStringValue("name", "Hamburger");
+		assertTrue(headers.contains(name));
+
+		// check fields
+		List<KlaxonValue> fields = klaxon.getFields();
+		assertEquals(5, fields.size());
+
+		// cost and forChildren
+		KlaxonStringValue cost = new KlaxonStringValue("cost", "39.9");
+		assertEquals(cost, fields.get(0));
+
+		KlaxonStringValue forChildren = new KlaxonStringValue("forChildren", "NO");
+		assertEquals(forChildren, fields.get(1));
+
+		// ingredients
+		KlaxonObject ingredients = (KlaxonObject) fields.get(2);
+		KlaxonValue ingredient1 = KlaxonTestUtils.createWithOneHeader(//
+				"ingredient", null, null, "Ham");
+		KlaxonValue ingredient2 = KlaxonTestUtils.createWithOneHeader(//
+				"ingredient", "amount", "2 pieces", "Burger");
+
+		// assertEquals(ingredient1.toString(),
+		// ingredients.getFields().get(0).toString());
+		// assertEquals(ingredient2.toString(),
+		// ingredients.getFields().get(1).toString());
+
+		assertEquals(ingredient1, ingredients.getFields().get(0));
+		assertEquals(ingredient2, ingredients.getFields().get(1));
+
+		// photo
+		KlaxonValue photo = KlaxonTestUtils.createWithOneHeader(//
 				"photo", "format", "jpg", "~/photos/hamburger.jpg");
-		assertTrue(children.contains(photo));
+		assertEquals(photo, fields.get(3));
 
-		// ...
+		// reciepe
+		KlaxonValue reciepe = KlaxonTestUtils.createWithOneHeader(//
+				"reciepe", "lang", "en", "Take ham and burgers and make a hamburger");
+		assertEquals(reciepe, fields.get(4));
+	}
+
+	@Test
+	public void testParseKlaxonFromElementWithChildrenEverywhere() throws KlaxonException, KlaxonToXMLException {
+		KlaxonObject klaxon = calculateKlaxon(K2DocFormat.CHILDREN_EVERYWHERE);
+
+		// check name
+		assertEquals("food", klaxon.getName());
+
+		// check headers
+		List<KlaxonValue> headers = klaxon.getHeaders();
+		assertEquals(0, headers.size());
+
+		// check fields
+		List<KlaxonValue> fields = klaxon.getFields();
+		assertEquals(6, fields.size());
+
+		// check name, cost and forChildren
+		KlaxonStringValue name = new KlaxonStringValue("name", "Hamburger");
+		assertEquals(name, fields.get(0));
+
+		KlaxonStringValue cost = new KlaxonStringValue("cost", "39.9");
+		assertEquals(cost, fields.get(1));
+
+		KlaxonStringValue forChildren = new KlaxonStringValue("forChildren", "NO");
+		assertEquals(forChildren, fields.get(2));
+
+		// ingredients
+		KlaxonObject ingredients = (KlaxonObject) fields.get(3);
+		KlaxonValue ingredient1 = KlaxonTestUtils.createWithOneHeader(//
+				"ingredient", null, null, "Ham");
+		KlaxonValue ingredient2Amount = KlaxonTestUtils.createWithOneHeader(//
+				"amount", null, null, "2 pieces");
+		KlaxonValue ingredient2Name = KlaxonTestUtils.createWithOneHeader(//
+				"ingredient", null, null, "Burger");
+
+		// assertEquals(ingredient1.toString(), ((KlaxonObject)
+		// ingredients.getFields().get(0)).getFields().get(0).toString());
+		// assertEquals(ingredient2Name.toString(), ((KlaxonObject)
+		// ingredients.getFields().get(1)).getFields().get(0).toString());
+		// assertEquals(ingredient2Amount.toString(), ((KlaxonObject)
+		// ingredients.getFields().get(1)).getFields().get(1).toString());
+
+		assertEquals(ingredient1, ((KlaxonObject) ingredients.getFields().get(0)).getFields().get(0));
+		assertEquals(ingredient2Name, ((KlaxonObject) ingredients.getFields().get(1)).getFields().get(0));
+		assertEquals(ingredient2Amount, ((KlaxonObject) ingredients.getFields().get(1)).getFields().get(1));
+
+		// photo
+		KlaxonValue photoFormat = KlaxonTestUtils.createWithOneHeader(//
+				"format", null, null, "jpg");
+		KlaxonValue photoPhoto = KlaxonTestUtils.createWithOneHeader(//
+				"photo", null, null, "~/photos/hamburger.jpg");
+
+		KlaxonObject photo = (KlaxonObject) fields.get(4);
+		assertEquals(photoFormat, photo.getFields().get(0));
+		assertEquals(photoPhoto, photo.getFields().get(1));
+
+		// reciepe
+		KlaxonValue reciepeLang = KlaxonTestUtils.createWithOneHeader(//
+				"lang", null, null, "en");
+		KlaxonValue reciepeReciepe = KlaxonTestUtils.createWithOneHeader(//
+				"reciepe", null, null, "Take ham and burgers and make a hamburger");
+
+		KlaxonObject reciepe = (KlaxonObject) fields.get(5);
+		assertEquals(reciepeLang, reciepe.getFields().get(0));
+		assertEquals(reciepeReciepe, reciepe.getFields().get(1));
+	}
+
+	private KlaxonObject calculateKlaxon(K2DocFormat format) throws KlaxonToXMLException, KlaxonException {
+		Document document = KlaxonToXMLImpl.createDocument();
+		Element elem = foods.createElement(document, format);
+
+		KlaxonObject klaxon = (KlaxonObject) fromElems.createKlaxonOfElement(elem);
+
+		// System.out.println(format);
+		// klaxon.print(0, System.out);
+
+		return klaxon;
 	}
 
 }

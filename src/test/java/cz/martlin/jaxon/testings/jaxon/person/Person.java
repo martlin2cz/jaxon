@@ -1,11 +1,16 @@
-package cz.martlin.jaxon.testings.jaxon;
+package cz.martlin.jaxon.testings.jaxon.person;
 
 import cz.martlin.jaxon.jaxon.JaxonSerializable;
 
+/**
+ * The simpliest testing class. Person with name, age and employment flag
+ * 
+ * @author martin
+ *
+ */
 public class Person implements JaxonSerializable {
 	private String name;
 	private int age;
-
 	private boolean employed;
 
 	public Person() {
@@ -68,8 +73,7 @@ public class Person implements JaxonSerializable {
 
 	@Override
 	public String toString() {
-		return "Person [name=" + name + ", age=" + age + ", employed="
-				+ employed + "]";
+		return "Person [name=" + name + ", age=" + age + ", employed=" + employed + "]";
 	}
 
 	@Override

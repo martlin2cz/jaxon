@@ -1,4 +1,4 @@
-package cz.martlin.jaxon.testings.jack;
+package cz.martlin.jaxon.testings.jack.drink;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,11 +15,15 @@ import cz.martlin.jaxon.jack.data.values.JackAtomicValue;
 import cz.martlin.jaxon.jack.data.values.JackCollection;
 import cz.martlin.jaxon.jack.data.values.JackObject;
 import cz.martlin.jaxon.jack.data.values.JackValue;
-import cz.martlin.jaxon.testings.JackTestTuple;
-import cz.martlin.jaxon.testings.jaxon.Person;
-import cz.martlin.jaxon.testings.jaxon.PersonJackTestTuple;
-
-public class DrinkJackTest implements JackTestTuple<Drink> {
+import cz.martlin.jaxon.testings.jaxon.person.Person;
+import cz.martlin.jaxon.testings.jaxon.person.PersonTestTuples;
+import cz.martlin.jaxon.testings.tuples.JackTestTuple;
+/**
+ * Test tuple with {@link Drink} instances.
+ * @author martin
+ *
+ */
+public class DrinkJackTestTuple implements JackTestTuple<Drink> {
 
 	private final String name;
 	private final DrinkType type;
@@ -36,10 +40,9 @@ public class DrinkJackTest implements JackTestTuple<Drink> {
 	private final JackObject addedByJack;
 	private final Person addedByObj;
 
-	public DrinkJackTest(String name, DrinkType type, int volume,
-			Integer alcohol, File image, Date since, double cost,
-			JackCollection ingredientsJack, List<String> ingredientsObj,
-			JackObject addedByJack, Person addedByObj) {
+	public DrinkJackTestTuple(String name, DrinkType type, int volume, Integer alcohol, File image, Date since,
+			double cost, JackCollection ingredientsJack, List<String> ingredientsObj, JackObject addedByJack,
+			Person addedByObj) {
 
 		super();
 		this.name = name;
@@ -78,7 +81,7 @@ public class DrinkJackTest implements JackTestTuple<Drink> {
 	}
 
 	@Override
-	public JackObject createJackObject() {
+	public JackObject createJack() {
 		Map<JackObjectField, JackValue> values = new LinkedHashMap<>();
 
 		JackTestsUtils.putFT(values, "name", String.class, name);
@@ -86,16 +89,14 @@ public class DrinkJackTest implements JackTestTuple<Drink> {
 		JackTestsUtils.putFT(values, "volume", int.class, volume);
 		JackTestsUtils.putFT(values, "alcohol", Integer.class, alcohol);
 
-		JackObjectField ingredientsField = new JackObjectField("ingredients",
-				new JackValueType(List.class));
+		JackObjectField ingredientsField = new JackObjectField("ingredients", new JackValueType(List.class));
 		values.put(ingredientsField, ingredientsJack);
 
 		JackTestsUtils.putFT(values, "image", File.class, image);
 
 		JackTestsUtils.putFT(values, "since", Date.class, since);
 
-		JackObjectField addedByField = new JackObjectField("addedBy",
-				new JackValueType(Person.class));
+		JackObjectField addedByField = new JackObjectField("addedBy", new JackValueType(Person.class));
 		values.put(addedByField, addedByJack);
 
 		JackTestsUtils.putFT(values, "cost", double.class, cost);
@@ -112,16 +113,14 @@ public class DrinkJackTest implements JackTestTuple<Drink> {
 		JackTestsUtils.addF(fields, "volume", int.class);
 		JackTestsUtils.addF(fields, "alcohol", Integer.class);
 
-		JackObjectField ingredientsField = new JackObjectField("ingredients",
-				new JackValueType(List.class));
+		JackObjectField ingredientsField = new JackObjectField("ingredients", new JackValueType(List.class));
 		fields.add(ingredientsField);
 
 		JackTestsUtils.addF(fields, "image", File.class);
 
 		JackTestsUtils.addF(fields, "since", Date.class);
 
-		JackObjectField addedByField = new JackObjectField("addedBy",
-				new JackValueType(Person.class));
+		JackObjectField addedByField = new JackObjectField("addedBy", new JackValueType(Person.class));
 		fields.add(addedByField);
 
 		JackTestsUtils.addF(fields, "cost", double.class);
@@ -129,7 +128,11 @@ public class DrinkJackTest implements JackTestTuple<Drink> {
 		return new JackObjectDesign(getType(), fields);
 	}
 
-	public static DrinkJackTest createLatte() {
+	/**
+	 * Creates Caffe late.
+	 * @return
+	 */
+	public static DrinkJackTestTuple createCaffeLate() {
 		String name = "Caffe Latte";
 		DrinkType type = DrinkType.HOT;
 
@@ -143,17 +146,15 @@ public class DrinkJackTest implements JackTestTuple<Drink> {
 		String ingredient1 = "Milk";
 		String ingredient2 = "Coffe";
 
-		JackCollection ingredientsJack = createIngredientsJack(ingredient1,
-				ingredient2);
-		List<String> ingredientsObj = createIngredientsObj(ingredient1,
-				ingredient2);
+		JackCollection ingredientsJack = createIngredientsJack(ingredient1, ingredient2);
+		List<String> ingredientsObj = createIngredientsObj(ingredient1, ingredient2);
 
-		PersonJackTestTuple foobar = PersonJackTestTuple.createFooBar();
-		JackObject addedByJack = foobar.createJackObject();
-		Person addedByObj = foobar.createObject();
+		PersonTestTuples john = PersonTestTuples.createJohn();
+		JackObject addedByJack = john.createJack();
+		Person addedByObj = john.createObject();
 
-		return new DrinkJackTest(name, type, volume, alcohol, image, since,
-				cost, ingredientsJack, ingredientsObj, addedByJack, addedByObj);
+		return new DrinkJackTestTuple(name, type, volume, alcohol, image, since, cost, ingredientsJack, ingredientsObj,
+				addedByJack, addedByObj);
 	}
 
 	private static JackCollection createIngredientsJack(String... ingredients) {

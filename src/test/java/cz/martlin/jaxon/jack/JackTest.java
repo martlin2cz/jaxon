@@ -1,4 +1,4 @@
-package cz.martlin.jaxon.jack;
+	package cz.martlin.jaxon.jack;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import cz.martlin.jaxon.config.Config;
-import cz.martlin.jaxon.config.ImplProvider;
 import cz.martlin.jaxon.jack.data.design.JackObjectDesign;
 import cz.martlin.jaxon.jack.data.design.JackObjectField;
 import cz.martlin.jaxon.jack.data.design.JackValueType;
@@ -14,18 +13,23 @@ import cz.martlin.jaxon.jack.data.misc.JackException;
 import cz.martlin.jaxon.jack.data.values.JackAtomicValue;
 import cz.martlin.jaxon.jack.data.values.JackObject;
 import cz.martlin.jaxon.jack.data.values.JackValue;
-import cz.martlin.jaxon.testings.JackTestTuple;
-import cz.martlin.jaxon.testings.jack.Drink;
-import cz.martlin.jaxon.testings.jack.DrinkJackTest;
-import cz.martlin.jaxon.testings.jaxon.Person;
-import cz.martlin.jaxon.testings.jaxon.PersonJackTestTuple;
+import cz.martlin.jaxon.testings.jack.drink.Drink;
+import cz.martlin.jaxon.testings.jack.drink.DrinkJackTestTuple;
+import cz.martlin.jaxon.testings.jaxon.person.Person;
+import cz.martlin.jaxon.testings.jaxon.person.PersonTestTuples;
+import cz.martlin.jaxon.testings.tuples.JackTestTuple;
 
+/**
+ * Tests {@link JackConverter}.
+ * @author martin
+ *
+ */
 public class JackTest {
-	private final Config config = ImplProvider.getTestingConfig();
+	private final Config config = new Config();
 	private final JackConverter converter = new JackConverter(config);
 
-	private final JackTestTuple<Person> persons = PersonJackTestTuple.createMe();
-	private final JackTestTuple<Drink> drinks = DrinkJackTest.createLatte();
+	private final JackTestTuple<Person> persons = PersonTestTuples.createMe();
+	private final JackTestTuple<Drink> drinks = DrinkJackTestTuple.createCaffeLate();
 
 	@Test
 	public void testToJack() throws JackException {
@@ -38,7 +42,7 @@ public class JackTest {
 		assertEquals(nameE, nameA);
 
 		JackValue ageA = jack.getValue("age");
-		JackValue ageE = new JackAtomicValue(42);
+		JackValue ageE = new JackAtomicValue(24);
 		assertEquals(ageE, ageA);
 
 		JackValue empA = jack.getValue("employed");
@@ -48,11 +52,11 @@ public class JackTest {
 
 	@Test
 	public void testToObject() throws JackException {
-		JackObject jack = persons.createJackObject();
+		JackObject jack = persons.createJack();
 		Person person = (Person) converter.toObject(jack);
 
 		assertEquals("m@rtlin", person.getName());
-		assertEquals(42, person.getAge());
+		assertEquals(24, person.getAge());
 		assertEquals(false, person.isEmployed());
 	}
 
@@ -65,7 +69,7 @@ public class JackTest {
 		assertEquals(person1, newPerson1);
 
 		// jack -> object -> jack
-		JackObject jack2 = persons.createJackObject();
+		JackObject jack2 = persons.createJack();
 		Person person2 = (Person) converter.toObject(jack2);
 		JackValue newJack2 = converter.toJack(person2);
 		assertEquals(jack2, newJack2);
@@ -95,7 +99,7 @@ public class JackTest {
 	@Test
 	public void testDrinks() throws JackException {
 		Drink objectE = drinks.createObject();
-		JackObject jackE = drinks.createJackObject();
+		JackObject jackE = drinks.createJack();
 
 		JackValue jackA = converter.toJack(objectE);
 		Drink objectA = (Drink) converter.toObject(jackE);

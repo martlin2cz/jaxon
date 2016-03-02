@@ -1,11 +1,16 @@
-package cz.martlin.jaxon.testings.j2k;
+package cz.martlin.jaxon.testings.j2k.bike;
 
 import java.util.Map;
 
 import cz.martlin.jaxon.j2k.abstracts.JackToKlaxonSerializable;
 import cz.martlin.jaxon.jack.abstracts.JackSerializable;
-import cz.martlin.jaxon.testings.jaxon.Person;
+import cz.martlin.jaxon.testings.jaxon.person.Person;
 
+/**
+ * Data class representing some bike in some bikes-to-rent. 
+ * @author martin
+ *
+ */
 public class BikeToBorrow implements JackSerializable, JackToKlaxonSerializable {
 
 	private int weight;
@@ -54,15 +59,13 @@ public class BikeToBorrow implements JackSerializable, JackToKlaxonSerializable 
 		return previouslyBorrowedDays;
 	}
 
-	public void setPreviouslyBorrowedDays(
-			Map<Person, Integer> previouslyBorrowedDays) {
+	public void setPreviouslyBorrowedDays(Map<Person, Integer> previouslyBorrowedDays) {
 		this.previouslyBorrowedDays = previouslyBorrowedDays;
 	}
 
 	@Override
 	public String jaxonDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return "bike to borrow simple instance";
 	}
 
 }

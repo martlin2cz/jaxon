@@ -19,10 +19,15 @@ import cz.martlin.jaxon.jack.abstracts.JackSerializable;
 import cz.martlin.jaxon.jack.data.design.JackObjectField;
 import cz.martlin.jaxon.jack.data.design.JackValueType;
 import cz.martlin.jaxon.jack.data.misc.JackException;
-import cz.martlin.jaxon.testings.jack.Drink;
-import cz.martlin.jaxon.testings.jaxon.Person;
-import cz.martlin.jaxon.testings.jaxon.PersonJackTestTuple;
+import cz.martlin.jaxon.testings.jack.drink.Drink;
+import cz.martlin.jaxon.testings.jaxon.person.Person;
+import cz.martlin.jaxon.testings.jaxon.person.PersonTestTuples;
 
+/**
+ * Tests {@link ReflectionAndJack}.
+ * @author martin
+ *
+ */
 public class ReflectionAndJackTest {
 	private final Config config = new Config();
 	private final ReflectionAndJack raj = new ReflectionAndJack(config);
@@ -46,11 +51,10 @@ public class ReflectionAndJackTest {
 
 	@Test
 	public void testCreateType() throws JackException {
-		JackValueType stringA = raj.createType("java.lang.String");
+		JackValueType stringA = raj.createType(String.class.getName());
 		assertEquals(stringType, stringA);
 
-		JackValueType personA = raj
-				.createType("cz.martlin.jaxon.testings.jaxon.Person");
+		JackValueType personA = raj.createType(Person.class.getName());
 		assertEquals(personType, personA);
 
 	}
@@ -120,18 +124,18 @@ public class ReflectionAndJackTest {
 
 	@Test
 	public void testGetValueOf() throws JackException {
-		Person person = PersonJackTestTuple.createMe().createObject();
+		Person person = PersonTestTuples.createMe().createObject();
 
 		assertEquals("m@rtlin", raj.getValueOf(person, nameField));
 
-		assertEquals(42, raj.getValueOf(person, ageField));
+		assertEquals(24, raj.getValueOf(person, ageField));
 
 		assertEquals(false, raj.getValueOf(person, empField));
 	}
 
 	@Test
 	public void testSetValueTo() throws JackException {
-		Person person = PersonJackTestTuple.createMe().createObject();
+		Person person = PersonTestTuples.createMe().createObject();
 
 		raj.setValueTo(person, nameField, "anonymous");
 		assertEquals("anonymous", person.getName());

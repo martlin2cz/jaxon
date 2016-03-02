@@ -12,6 +12,11 @@ import cz.martlin.jaxon.jack.data.misc.JackException;
 import cz.martlin.jaxon.jack.data.values.JackMap;
 import cz.martlin.jaxon.jack.data.values.JackValue;
 
+/**
+ * Processes {@link Map}s.
+ * @author martin
+ *
+ */
 public class MapsFieldsProcessor extends ValueTypeProcessor {
 
 	private final JackImplementation impl;

@@ -9,6 +9,8 @@ import cz.martlin.jaxon.j2k.serializer.PrimitiveTypeSerializer;
 import cz.martlin.jaxon.jack.data.design.JackValueType;
 
 /**
+ * Lists Java primitive data types and related stuff (serializers, names of
+ * types and wrapping types).
  * https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html
  * 
  * @author martin
@@ -18,22 +20,33 @@ public class Primitives {
 
 	private static final List<PrimitiveTypeSerializer<?>> serializers = initSerializers();
 	private static final Map<String, Class<?>> names = initNames();
+	private static final Map<Class<?>, Class<?>> wrappers = initWrappers(serializers);
 
+	/**
+	 * Creates list of primitive type serializers for all primitives.
+	 * 
+	 * @return
+	 */
 	private static List<PrimitiveTypeSerializer<?>> initSerializers() {
 		List<PrimitiveTypeSerializer<?>> serializers = new ArrayList<>();
 
-		serializers.add(new ByteConverter());
-		serializers.add(new ShortConverter());
-		serializers.add(new IntConverter());
-		serializers.add(new LongConverter());
-		serializers.add(new FloatConverter());
-		serializers.add(new DoubleConverter());
-		serializers.add(new BooleanConverter());
-		serializers.add(new CharConverter());
+		serializers.add(new ByteSerializer());
+		serializers.add(new ShortSerializer());
+		serializers.add(new IntSerializer());
+		serializers.add(new LongSerializer());
+		serializers.add(new FloatSerializer());
+		serializers.add(new DoubleSerializer());
+		serializers.add(new BooleanSerializer());
+		serializers.add(new CharSerializer());
 
 		return serializers;
 	}
 
+	/**
+	 * Initializes list of names of all privitives.
+	 * 
+	 * @return
+	 */
 	private static Map<String, Class<?>> initNames() {
 		Map<String, Class<?>> names = new HashMap<>();
 
@@ -49,21 +62,55 @@ public class Primitives {
 		return names;
 	}
 
+	/**
+	 * Initializes list of primitives and theirs wrappers.
+	 * 
+	 * @param serializers
+	 * @return
+	 */
+	private static Map<Class<?>, Class<?>> initWrappers(List<PrimitiveTypeSerializer<?>> serializers) {
+		Map<Class<?>, Class<?>> names = new HashMap<>();
+
+		for (PrimitiveTypeSerializer<?> serializer : serializers) {
+			names.put(serializer.getPrimitiveType(), serializer.getWrapperType());
+		}
+
+		return names;
+	}
+
 	private Primitives() {
 	}
 
+	/**
+	 * Returns primitives serializers.
+	 * 
+	 * @return
+	 */
 	public static List<PrimitiveTypeSerializer<?>> getSerializers() {
 		return serializers;
 	}
 
+	/**
+	 * Returns names of primitive data types.
+	 * 
+	 * @return
+	 */
 	public static Map<String, Class<?>> getNames() {
 		return names;
 	}
 
+	/**
+	 * Returns map with entries primitive type - wrapper type.
+	 * 
+	 * @return
+	 */
+	public static Map<Class<?>, Class<?>> getWrappers() {
+		return wrappers;
+	}
+
 	// /////////////////////////////////////////////////////////////////////////
 
-	public static class CharConverter extends
-			PrimitiveTypeSerializer<Character> {
+	public static class CharSerializer extends PrimitiveTypeSerializer<Character> {
 
 		@Override
 		public Class<Character> getPrimitiveType() {
@@ -87,8 +134,7 @@ public class Primitives {
 
 	}
 
-	public static class BooleanConverter extends
-			PrimitiveTypeSerializer<Boolean> {
+	public static class BooleanSerializer extends PrimitiveTypeSerializer<Boolean> {
 
 		private static final String TRUE = "true";
 		private static final String FALSE = "false";
@@ -125,7 +171,7 @@ public class Primitives {
 
 	}
 
-	public static class DoubleConverter extends PrimitiveTypeSerializer<Double> {
+	public static class DoubleSerializer extends PrimitiveTypeSerializer<Double> {
 
 		@Override
 		public Class<Double> getPrimitiveType() {
@@ -149,7 +195,7 @@ public class Primitives {
 
 	}
 
-	public static class FloatConverter extends PrimitiveTypeSerializer<Float> {
+	public static class FloatSerializer extends PrimitiveTypeSerializer<Float> {
 
 		@Override
 		public Class<Float> getPrimitiveType() {
@@ -173,7 +219,7 @@ public class Primitives {
 
 	}
 
-	public static class LongConverter extends PrimitiveTypeSerializer<Long> {
+	public static class LongSerializer extends PrimitiveTypeSerializer<Long> {
 
 		@Override
 		public Class<Long> getPrimitiveType() {
@@ -197,7 +243,7 @@ public class Primitives {
 
 	}
 
-	public static class IntConverter extends PrimitiveTypeSerializer<Integer> {
+	public static class IntSerializer extends PrimitiveTypeSerializer<Integer> {
 
 		@Override
 		public Class<Integer> getPrimitiveType() {
@@ -221,7 +267,7 @@ public class Primitives {
 
 	}
 
-	public static class ShortConverter extends PrimitiveTypeSerializer<Short> {
+	public static class ShortSerializer extends PrimitiveTypeSerializer<Short> {
 
 		@Override
 		public Class<Short> getPrimitiveType() {
@@ -245,7 +291,7 @@ public class Primitives {
 
 	}
 
-	public static class ByteConverter extends PrimitiveTypeSerializer<Byte> {
+	public static class ByteSerializer extends PrimitiveTypeSerializer<Byte> {
 
 		@Override
 		public Class<Byte> getPrimitiveType() {

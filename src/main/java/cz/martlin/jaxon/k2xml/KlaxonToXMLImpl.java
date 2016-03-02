@@ -27,6 +27,11 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/**
+ * Implements storing and loading of xml documents into and from files/streams/strings etc..
+ * @author martin
+ *
+ */
 public class KlaxonToXMLImpl {
 
 	private final KlaxonToXMLConfig config;
@@ -35,6 +40,11 @@ public class KlaxonToXMLImpl {
 		this.config = config;
 	}
 
+	/**
+	 * Creates document builder.
+	 * @return
+	 * @throws KlaxonToXMLException
+	 */
 	private static DocumentBuilder createBuilder() throws KlaxonToXMLException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -47,6 +57,12 @@ public class KlaxonToXMLImpl {
 
 	}
 
+	/**
+	 * Creates documents transformer.
+	 * @return
+	 * @throws TransformerConfigurationException
+	 * @throws TransformerFactoryConfigurationError
+	 */
 	private Transformer createTransformer()
 			throws TransformerConfigurationException,
 			TransformerFactoryConfigurationError {

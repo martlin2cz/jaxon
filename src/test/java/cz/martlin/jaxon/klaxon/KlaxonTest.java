@@ -6,14 +6,20 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 import cz.martlin.jaxon.config.Config;
-import cz.martlin.jaxon.config.ImplProvider;
-import cz.martlin.jaxon.klaxon.data.KlaxonAbstractElement;
-import cz.martlin.jaxon.testings.KlaxonTestTuple;
-import cz.martlin.jaxon.testings.klaxon.FoodKlaxonCreator;
+import cz.martlin.jaxon.klaxon.config.K2DocFormat;
+import cz.martlin.jaxon.klaxon.data.KlaxonObject;
+import cz.martlin.jaxon.testings.klaxon.food.FoodKlaxonCreator;
+import cz.martlin.jaxon.testings.tuples.KlaxonTestTuple;
 
+/**
+ * Tests {@link KlaxonConverter}.
+ * 
+ * @author martin
+ *
+ */
 public class KlaxonTest {
 
-	private final Config config = ImplProvider.getTestingConfig();
+	private final Config config = new Config();
 	private final KlaxonConverter converter = new KlaxonConverter(config);
 
 	@Test
@@ -24,9 +30,9 @@ public class KlaxonTest {
 
 	private void testToDocument(KlaxonTestTuple tuple) throws KlaxonException {
 
-		KlaxonAbstractElement klaxonE = tuple.createKlaxon();
+		KlaxonObject klaxonE = tuple.createKlaxon();
 		Document documentA = converter.toDocument(klaxonE);
-		Document documentE = tuple.createDocument();
+		Document documentE = tuple.createDocument(K2DocFormat.ATTRS_FOR_HEADERS);
 
 		assertEquals(KlaxonTestUtils.toString(documentE), //
 				KlaxonTestUtils.toString(documentA));
@@ -40,10 +46,10 @@ public class KlaxonTest {
 
 	private void testToKlaxon(KlaxonTestTuple tuple) throws KlaxonException {
 
-		Document documentE = tuple.createDocument();
-		KlaxonAbstractElement klaxonA = converter.toKlaxon(documentE);
+		Document documentE = tuple.createDocument(K2DocFormat.ATTRS_FOR_HEADERS);
+		KlaxonObject klaxonA = converter.toKlaxon(documentE);
 
-		KlaxonAbstractElement klaxonE = tuple.createKlaxon();
+		KlaxonObject klaxonE = tuple.createKlaxon();
 
 		assertEquals(klaxonE, klaxonA);
 	}
@@ -54,19 +60,18 @@ public class KlaxonTest {
 	}
 
 	private void testBiConvert(KlaxonTestTuple tuple) throws KlaxonException {
-		Document document1 = tuple.createDocument();
+		Document document1 = tuple.createDocument(K2DocFormat.ATTRS_FOR_HEADERS);
 
 		// System.out.println(KlaxonTestUtils.toString(document1));
 
-		KlaxonAbstractElement klaxon1 = converter.toKlaxon(document1);
+		KlaxonObject klaxon1 = converter.toKlaxon(document1);
 		Document newDocument1 = converter.toDocument(klaxon1);
 
-		assertEquals(KlaxonTestUtils.toString(document1),
-				KlaxonTestUtils.toString(newDocument1));
+		assertEquals(KlaxonTestUtils.toString(document1), KlaxonTestUtils.toString(newDocument1));
 
-		KlaxonAbstractElement klaxon2 = tuple.createKlaxon();
+		KlaxonObject klaxon2 = tuple.createKlaxon();
 		Document document2 = converter.toDocument(klaxon2);
-		KlaxonAbstractElement newKlaxon2 = converter.toKlaxon(document2);
+		KlaxonObject newKlaxon2 = converter.toKlaxon(document2);
 
 		// JackTestsUtils.printActualAndExcepted(klaxon1, klaxon2);
 

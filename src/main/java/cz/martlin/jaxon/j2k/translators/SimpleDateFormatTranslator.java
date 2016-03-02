@@ -2,18 +2,21 @@ package cz.martlin.jaxon.j2k.translators;
 
 import java.text.SimpleDateFormat;
 
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtFromKlaxonStyle;
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtToKlaxonStyle;
 import cz.martlin.jaxon.j2k.serializer.AbstractToStringSerializer;
 import cz.martlin.jaxon.j2k.translator.SingleValuedTranslator;
 import cz.martlin.jaxon.jack.data.design.JackValueType;
 
+/**
+ * Implements translator for {@link SimpleDateFormat} instances.
+ * 
+ * @author martin
+ *
+ */
 public class SimpleDateFormatTranslator extends SingleValuedTranslator<SimpleDateFormat> {
 
-	public SimpleDateFormatTranslator(AtmValFrmtToKlaxonStyle toKlaxonStyle,
-			AtmValFrmtFromKlaxonStyle fromKlaxonStyle) {
+	public SimpleDateFormatTranslator() {
 
-		super(new SimpleDateFormatToStrSerializer(), toKlaxonStyle, fromKlaxonStyle);
+		super(new SimpleDateFormatToStrSerializer());
 	}
 
 	public static class SimpleDateFormatToStrSerializer implements AbstractToStringSerializer<SimpleDateFormat> {

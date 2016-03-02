@@ -2,16 +2,19 @@ package cz.martlin.jaxon.j2k.translators;
 
 import java.awt.Color;
 
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtFromKlaxonStyle;
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtToKlaxonStyle;
 import cz.martlin.jaxon.j2k.serializer.AbstractToStringSerializer;
 import cz.martlin.jaxon.j2k.translator.SingleValuedTranslator;
 import cz.martlin.jaxon.jack.data.design.JackValueType;
 
+/**
+ * Represents translator of {@link Color} instances.
+ * @author martin
+ *
+ */
 public class ColorTranslator extends SingleValuedTranslator<Color> {
 
-	public ColorTranslator(AtmValFrmtToKlaxonStyle toKlaxonStyle, AtmValFrmtFromKlaxonStyle fromKlaxonStyle) {
-		super(new ColorToStringSerializer(), toKlaxonStyle, fromKlaxonStyle);
+	public ColorTranslator() {
+		super(new ColorToStringSerializer());
 	}
 
 	public static class ColorToStringSerializer implements AbstractToStringSerializer<Color> {

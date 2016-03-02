@@ -6,20 +6,33 @@ import org.w3c.dom.Element;
 import cz.martlin.jaxon.k2xml.KlaxonToXMLException;
 import cz.martlin.jaxon.k2xml.KlaxonToXMLImpl;
 import cz.martlin.jaxon.klaxon.config.KlaxonConfig;
-import cz.martlin.jaxon.klaxon.data.KlaxonAbstractElement;
+import cz.martlin.jaxon.klaxon.data.KlaxonObject;
 
+/**
+ * Implements converting of klaxon objects to xml documents and back.
+ * 
+ * @author martin
+ *
+ */
 public class KlaxonConverter {
-	private final KlaxonImplementation impl;
+	private final KlaxonToElementsImpl toElems;
+	private final KlaxonFromElementsImpl fromElems;
 
 	public KlaxonConverter(KlaxonConfig config) {
-		this.impl = new KlaxonImplementation(config);
-
+		this.toElems = new KlaxonToElementsImpl(config);
+		this.fromElems = new KlaxonFromElementsImpl(config);
 	}
 
-	public Document toDocument(KlaxonAbstractElement klaxon)
-			throws KlaxonException {
+	/**
+	 * Converts given klaxon object into document.
+	 * 
+	 * @param klaxon
+	 * @return
+	 * @throws KlaxonException
+	 */
+	public Document toDocument(KlaxonObject klaxon) throws KlaxonException {
 		Document document;
-		
+
 		try {
 			document = KlaxonToXMLImpl.createDocument();
 		} catch (KlaxonToXMLException e) {
@@ -28,7 +41,7 @@ public class KlaxonConverter {
 
 		Element root;
 		try {
-			root = impl.createElementOfKlaxon(document, klaxon);
+			root = toElems.createElementOfKlaxon(document, klaxon);
 		} catch (KlaxonException e) {
 			throw new KlaxonException("Cannot store to document", e);
 		}
@@ -37,13 +50,19 @@ public class KlaxonConverter {
 		return document;
 	}
 
-	public KlaxonAbstractElement toKlaxon(Document document)
-			throws KlaxonException {
+	/**
+	 * Converts given document to klaxon object.
+	 * 
+	 * @param document
+	 * @return
+	 * @throws KlaxonException
+	 */
+	public KlaxonObject toKlaxon(Document document) throws KlaxonException {
 
 		Element root = document.getDocumentElement();
-		KlaxonAbstractElement klaxon;
+		KlaxonObject klaxon;
 		try {
-			klaxon = impl.parseKlaxonFromElement(document, root);
+			klaxon = fromElems.createKlaxonOfElement(root);
 		} catch (KlaxonException e) {
 			throw new KlaxonException("Cannot load from document", e);
 		}

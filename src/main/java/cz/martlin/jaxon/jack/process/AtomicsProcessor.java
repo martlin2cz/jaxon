@@ -6,6 +6,11 @@ import cz.martlin.jaxon.jack.data.misc.JackException;
 import cz.martlin.jaxon.jack.data.values.JackAtomicValue;
 import cz.martlin.jaxon.jack.data.values.JackValue;
 
+/**
+ * Processes atomic values.
+ * @author martin
+ *
+ */
 public class AtomicsProcessor extends ValueTypeProcessor {
 
 	public AtomicsProcessor() {

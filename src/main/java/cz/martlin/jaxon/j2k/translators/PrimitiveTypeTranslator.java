@@ -1,20 +1,30 @@
 package cz.martlin.jaxon.j2k.translators;
 
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtFromKlaxonStyle;
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtToKlaxonStyle;
+import cz.martlin.jaxon.Primitives;
 import cz.martlin.jaxon.j2k.serializer.PrimitiveTypeSerializer;
 import cz.martlin.jaxon.j2k.translator.SingleValuedTranslator;
 import cz.martlin.jaxon.jack.data.design.JackValueType;
 
+/**
+ * Implements {@link SingleValuedTranslator} to use with Java primitive types
+ * (and they're wrappers).
+ * 
+ * @author martin
+ * @see Primitives
+ *
+ * @param <T>
+ */
 public class PrimitiveTypeTranslator<T> extends SingleValuedTranslator<T> {
 
-	public PrimitiveTypeTranslator(PrimitiveTypeSerializer<T> serializer,
-			AtmValFrmtToKlaxonStyle toKlaxonStyle,
-			AtmValFrmtFromKlaxonStyle fromKlaxonStyle) {
+	public PrimitiveTypeTranslator(PrimitiveTypeSerializer<T> serializer) {
 
-		super(serializer, toKlaxonStyle, fromKlaxonStyle);
+		super(serializer);
 	}
 
+	/**
+	 * Returns true, if is type corresponding primitive type or its wrapper
+	 * type.
+	 */
 	@Override
 	public boolean isApplicableTo(JackValueType type) {
 		PrimitiveTypeSerializer<T> ser = (PrimitiveTypeSerializer<T>) serializer;

@@ -2,16 +2,18 @@ package cz.martlin.jaxon.j2k.translators;
 
 import java.net.URL;
 
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtFromKlaxonStyle;
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtToKlaxonStyle;
 import cz.martlin.jaxon.j2k.serializer.AbstractToStringSerializer;
 import cz.martlin.jaxon.j2k.translator.SingleValuedTranslator;
 import cz.martlin.jaxon.jack.data.design.JackValueType;
-
+/**
+ * Implements translator of {@link URL} instances.
+ * @author martin
+ *
+ */
 public class URLTranslator extends SingleValuedTranslator<URL> {
 
-	public URLTranslator(AtmValFrmtToKlaxonStyle toKlaxonStyle, AtmValFrmtFromKlaxonStyle fromKlaxonStyle) {
-		super(new UrlToStringSeriliazer(), toKlaxonStyle, fromKlaxonStyle);
+	public URLTranslator() {
+		super(new UrlToStringSeriliazer());
 	}
 
 	public static class UrlToStringSeriliazer implements AbstractToStringSerializer<URL> {

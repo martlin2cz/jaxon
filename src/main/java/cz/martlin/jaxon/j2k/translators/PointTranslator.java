@@ -1,28 +1,31 @@
 package cz.martlin.jaxon.j2k.translators;
 
 import java.awt.Point;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtFromKlaxonStyle;
-import cz.martlin.jaxon.j2k.atomics.format.AtmValFrmtToKlaxonStyle;
 import cz.martlin.jaxon.j2k.data.JackToKlaxonException;
 import cz.martlin.jaxon.j2k.translator.AtomicValueTranslator;
 import cz.martlin.jaxon.jack.data.design.JackValueType;
 import cz.martlin.jaxon.jack.data.values.JackAtomicValue;
+import cz.martlin.jaxon.jack.data.values.JackNullValue;
 import cz.martlin.jaxon.jack.data.values.JackValue;
-import cz.martlin.jaxon.klaxon.data.KlaxonAbstractElement;
-import cz.martlin.jaxon.klaxon.data.KlaxonAttribute;
-import cz.martlin.jaxon.klaxon.data.KlaxonElemWithChildren;
-import cz.martlin.jaxon.klaxon.data.KlaxonEntry;
+import cz.martlin.jaxon.klaxon.data.KlaxonObject;
+import cz.martlin.jaxon.klaxon.data.KlaxonStringValue;
+import cz.martlin.jaxon.klaxon.data.KlaxonValue;
 
+/**
+ * Represents translator for translating {@link Point} instances.
+ * 
+ * @author martin
+ *
+ */
 public class PointTranslator extends AtomicValueTranslator<Point> {
 
 	private static final String X_ATTR_NAME = "x";
 	private static final String Y_ATTR_NAME = "y";
 
-	public PointTranslator(AtmValFrmtToKlaxonStyle toKlaxonStyle, AtmValFrmtFromKlaxonStyle fromKlaxonStyle) {
-		// TODO formatting
+	public PointTranslator() {
 	}
 
 	@Override
@@ -31,50 +34,78 @@ public class PointTranslator extends AtomicValueTranslator<Point> {
 	}
 
 	@Override
-	public KlaxonEntry toKlaxon(String name, JackValueType type, JackValue jack) throws JackToKlaxonException {
-		if (!(jack instanceof JackAtomicValue)) {
+	public KlaxonObject toKlaxon(String name, JackValueType type, JackValue jack) throws JackToKlaxonException {
+		if (jack instanceof JackNullValue) {
 			return null;
+		}
+
+		if (!(jack instanceof JackAtomicValue)) {
+			Exception e = new IllegalArgumentException("Not an atomic value");
+			throw new JackToKlaxonException("Bad format", e);
 		}
 
 		JackAtomicValue atomic = (JackAtomicValue) jack;
 		Point point = (Point) atomic.getValue();
 
-		Set<KlaxonAttribute> attributes = new LinkedHashSet<>();
+		List<KlaxonValue> attributes = new ArrayList<>();
 
 		String xStr = Double.toString(point.getX());
-		KlaxonAttribute xAtrr = new KlaxonAttribute(X_ATTR_NAME, xStr);
+		KlaxonStringValue xAtrr = new KlaxonStringValue(X_ATTR_NAME, xStr);
 		attributes.add(xAtrr);
 
 		String yStr = Double.toString(point.getX());
-		KlaxonAttribute yAtrr = new KlaxonAttribute(Y_ATTR_NAME, yStr);
+		KlaxonStringValue yAtrr = new KlaxonStringValue(Y_ATTR_NAME, yStr);
 		attributes.add(yAtrr);
 
-		return new KlaxonElemWithChildren(name, attributes);
+		return new KlaxonObject(name, attributes);
 	}
 
 	@Override
-	public JackValue toJack(JackValueType type, KlaxonEntry klaxon) throws JackToKlaxonException {
+	public JackValue toJack(JackValueType type, KlaxonValue klaxon) throws JackToKlaxonException {
+
+		if (!(klaxon instanceof KlaxonObject)) {
+			Exception e = new IllegalArgumentException("Not an klaxon object");
+			throw new JackToKlaxonException("Bad format", e);
+		}
+
+		KlaxonObject object = (KlaxonObject) klaxon;
+
+		int xVal = parseIntFrom(object, X_ATTR_NAME);
+		int yVal = parseIntFrom(object, Y_ATTR_NAME);
+
+		Point point = new Point(xVal, yVal);
+
+		return new JackAtomicValue(point);
+
+	}
+
+	/**
+	 * Tries to parse int value from given klaxon's field of given name.
+	 * 
+	 * @param klaxon
+	 * @param name
+	 * @return
+	 * @throws JackToKlaxonException
+	 */
+	// TODO move to SomeJ2KUtils class
+	private int parseIntFrom(KlaxonObject klaxon, String name) throws JackToKlaxonException {
 		try {
-			KlaxonAbstractElement elem = (KlaxonAbstractElement) klaxon;
+			KlaxonValue attr = klaxon.findFirst(name);
 
-			KlaxonAttribute xAttr = elem.getAttribute(X_ATTR_NAME);
-			KlaxonAttribute yAttr = elem.getAttribute(Y_ATTR_NAME);
-
-			if (xAttr == null || yAttr == null) {
-				throw new IllegalArgumentException("Missing attributes " + X_ATTR_NAME + " or " + Y_ATTR_NAME);
+			if (attr == null) {
+				throw new IllegalArgumentException("Missing attribute " + name);
 			}
 
-			String xStr = xAttr.getValue();
-			String yStr = yAttr.getValue();
+			if (!(attr instanceof KlaxonStringValue)) {
+				throw new IllegalArgumentException("Bad attribute format");
+			}
 
-			int xVal = Integer.parseInt(xStr);
-			int yVal = Integer.parseInt(yStr);
+			KlaxonStringValue string = (KlaxonStringValue) attr;
+			String value = string.getValue();
 
-			Point point = new Point(xVal, yVal);
-			return new JackAtomicValue(point);
-
+			return Integer.parseInt(value);
 		} catch (Exception e) {
-			throw new JackToKlaxonException("Cannot parse point", e);
+			throw new JackToKlaxonException("Cannot parse value of " + name, e);
 		}
 	}
 
