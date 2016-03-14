@@ -5,6 +5,7 @@ import java.io.File;
 import cz.martlin.jaxon.config.Config;
 import cz.martlin.jaxon.jaxon.JaxonConverter;
 import cz.martlin.jaxon.jaxon.JaxonException;
+import cz.martlin.jaxon.klaxon.config.K2DocFormat;
 import cz.martlin.jaxon.testings.jaxon.cv.CV;
 import cz.martlin.jaxon.testings.jaxon.cv.CVsJaxonTestTuple;
 import cz.martlin.jaxon.testings.jaxon.person.Person;
@@ -26,7 +27,7 @@ public class TestSomeJaxon {
 		// modify configuration
 		// config.setBaseTransformerName(J2KTransformWithHeaderVerboseImpl.NAME);
 		// config.setObjectsTransformerName(HermesSimpleJ2KTransformerImpl.NAME);
-		// config.setFormat(K2DocFormat.ATTRS_FOR_HEADERS);
+		 config.setFormat(K2DocFormat.ATTRS_WHERE_POSSIBLE);
 
 		final JaxonConverter converter = new JaxonConverter(config);
 

@@ -104,7 +104,7 @@ public class KlaxonToElementsImpl {
 			KlaxonStringValue string = (KlaxonStringValue) klaxon;
 			addContent(document, string, elem);
 		} else {
-			Exception e = new IllegalArgumentException("Unkown klaxon object tyoe");
+			Exception e = new IllegalArgumentException("Unkown klaxon object type");
 			throw new KlaxonException("Unknown type", e);
 		}
 
@@ -128,7 +128,7 @@ public class KlaxonToElementsImpl {
 			elem.appendChild(text);
 
 		} else if (tools.isToCreateValuedAttribute(format, string, elem)) {
-			String name = tools.configOrName(config.getFormat().valueAttrName(), string);
+			String name = tools.nameOfAttrElem(format, string);
 			elem.setAttribute(name, value);
 
 		} else if (tools.isToCreateTextChild(format, string, elem)) {
@@ -151,7 +151,8 @@ public class KlaxonToElementsImpl {
 	 * @throws KlaxonException
 	 */
 	private void addChildText(Document document, KlaxonStringValue string, Element elem) throws KlaxonException {
-		String name = tools.configOrName(config.getFormat().valueElemName(), string);
+		K2DocFormat format = config.getFormat();
+		String name = tools.nameOfValueElem(format, string);
 		Element child = document.createElement(name);
 		elem.appendChild(child);
 
