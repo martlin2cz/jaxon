@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<cV birth="Čt, 1 Led 1970 01:00:00" description="A simple curriculum vitae" drivingLicence="true" firstName="Linus" format="Fry" lastName="Torvalrd" photo="/home/linus/me.jpg" type="cz.martlin.jaxon.testings.jaxon.cv.CV">
+  <educations type="java.util.ArrayList">
+    <item degree="M.S." diploma="Linux: A Portable Operating System" schoolName="University Of Helsinki" since="Út, 13 Led 1970 05:53:45" subject="Computer Science" type="cz.martlin.jaxon.testings.jaxon.cv.University" until="So, 10 Led 1970 12:54:14"/>
+  </educations>
+  <languages type="java.util.TreeMap">
+    <entry>
+      <key type="java.lang.String" value="English"/>
+      <value type="cz.martlin.jaxon.testings.jaxon.cv.LanguageLevel" value="C1"/>
+    </entry>
+    <entry>
+      <key type="java.lang.String" value="Finish"/>
+      <value type="cz.martlin.jaxon.testings.jaxon.cv.LanguageLevel" value="NATIVE"/>
+    </entry>
+    <entry>
+      <key type="java.lang.String" value="Swedish"/>
+      <value type="cz.martlin.jaxon.testings.jaxon.cv.LanguageLevel" value="B1"/>
+    </entry>
+  </languages>
+  <jobs type="java.util.ArrayList">
+    <item company="Transmeta Corporation" profesion="Huh.." since="So, 10 Led 1970 22:25:55" type="cz.martlin.jaxon.testings.jaxon.cv.WorkExperiece" until="Út, 13 Led 1970 05:53:45"/>
+    <item company="Open Source Development Labs" profesion="Boss?" since="Út, 13 Led 1970 05:53:45" type="cz.martlin.jaxon.testings.jaxon.cv.WorkExperiece"/>
+  </jobs>
+</cV>
