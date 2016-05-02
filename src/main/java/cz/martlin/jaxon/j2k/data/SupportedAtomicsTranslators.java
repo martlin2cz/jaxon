@@ -1,6 +1,7 @@
 package cz.martlin.jaxon.j2k.data;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import cz.martlin.jaxon.j2k.translator.AtomicValueTranslator;
@@ -11,6 +12,7 @@ import cz.martlin.jaxon.j2k.translators.ColorTranslator;
 import cz.martlin.jaxon.j2k.translators.DateTranslator;
 import cz.martlin.jaxon.j2k.translators.EnumsTranslator;
 import cz.martlin.jaxon.j2k.translators.FileTranslator;
+import cz.martlin.jaxon.j2k.translators.GregorianCalendarTranslator;
 import cz.martlin.jaxon.j2k.translators.PointTranslator;
 import cz.martlin.jaxon.j2k.translators.SimpleDateFormatTranslator;
 import cz.martlin.jaxon.j2k.translators.StringTranslator;
@@ -96,6 +98,7 @@ public class SupportedAtomicsTranslators {
 		transformers.add(new PointTranslator());
 		transformers.add(new URLTranslator());
 		transformers.add(new SimpleDateFormatTranslator());
+		transformers.add(new GregorianCalendarTranslator(config));
 
 		// TODO others - URI, Dimension, Rectangle, ... ? ...
 

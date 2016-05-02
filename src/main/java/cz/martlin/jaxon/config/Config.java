@@ -27,7 +27,7 @@ public class Config implements JackConfig, KlaxonConfig, J2KConfig, KlaxonToXMLC
 	private boolean ignoringFinalFields = true;
 	private boolean indent = true;
 	private int indentSize = 2;
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	private K2DocFormat format = K2DocFormat.ATTRS_FOR_HEADERS;
 
 	private String baseTransformerName = J2KTransformWithRootObjSimpleImpl.NAME;
